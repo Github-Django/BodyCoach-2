@@ -1,0 +1,1 @@
+import{r as t}from"./CrojOfQC.js";import{B as r,o,c as s}from"./BcqZkZus.js";import"./nBvaaqy8.js";/* empty css        */const c={},n={class:"relative mb-8 space-y-2",style:{"counter-reset":"step 0"}};function a(e,i){return o(),s("div",n,[t(e.$slots,"default",{unwrap:"p"})])}const d=r(c,[["render",a]]);export{d as default};

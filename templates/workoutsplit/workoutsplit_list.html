@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workout Split List</title>
+</head>
+<body>
+    <h1>Workout Split List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Official Name</th>
+                <th>Sessions Per Week</th>
+                <th>Level</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for split in workout_splits %}
+                <tr>
+                    <td>{{ split.official_name }}</td>
+                    <td>{{ split.sessions_per_week }}</td>
+                    <td>{{ split.get_level_display }}</td>
+                    <td>
+                        <a href="{% url 'workoutsplit_update' split.id %}">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'workoutsplit_create' %}">Add New Workout Split</a>
+</body>
+</html>

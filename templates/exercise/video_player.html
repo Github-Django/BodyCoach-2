@@ -1,0 +1,117 @@
+{% extends 'home/base-video.html' %}
+{% load static %}
+
+{% block subject %}LifeStyle  - {{ video.name }} {% endblock %}
+
+{% block main %}
+<div class="video-container mx-auto px-4 py-8 max-w-4xl">
+  <!-- اطلاعات تمرین -->
+  <div class="exercise-info mb-6 bg-white rounded-lg shadow-lg p-6">
+    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">
+      روزِ {{ video.get_muscle_group_display }}
+    </span>
+
+    <h4 class="text-2xl font-bold mb-2"> - {{ video.name }}</h4>
+
+    {% if video.description %}
+      <p class="mt-4 text-gray-700"> <span class="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded">
+      توضیحات :
+    </span>{{ video.description }}</p>
+    {% endif %}
+  </div>
+
+  <!-- پلیر ویدئو -->
+  {% if video.training_video %}
+  <div class="video-wrapper relative rounded-lg overflow-hidden shadow-lg bg-black">
+    <video
+      id="plyr-video"
+      class="w-full"
+      playsinline
+      controls
+      preload="auto"
+      data-plyr-config='{"controls":["play-large","play","progress","current-time","mute","volume","fullscreen"],"keyboard":{"global":true}}'>
+      <source src="{{ video.training_video.url }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  {% else %}
+  <div class="alert alert-warning mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+    <p>ویدئویی برای این تمرین موجود نیست.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- بارگذاری غیرهمزمان منابع Plyr -->
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"></noscript>
+<script async src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+<style>
+  :root {
+    --plyr-color-main: #2563eb;
+    --plyr-video-background: #000;
+    --plyr-menu-background: rgba(255, 255, 255, 0.9);
+    --plyr-menu-color: #374151;
+  }
+  .video-container {
+    direction: rtl;
+  }
+  .plyr__video-wrapper {
+    background: var(--plyr-video-background);
+  }
+  .exercise-info h1 {
+    font-size: 2rem;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const player = new Plyr('#plyr-video', {
+    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+    settings: ['quality', 'speed'],
+    loadSprite: true,
+    storage: { enabled: true, key: 'plyr-video-settings' }
+  });
+
+  // بارگذاری تنبل ویدئو برای بهینه‌سازی سرعت صفحه
+  const video = document.getElementById('plyr-video');
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      video.load();
+      observer.disconnect();
+    }
+  }, { threshold: 0.3 });
+  observer.observe(video);
+
+  // ذخیره موقعیت ویدئو برای ادامه پخش
+  const storageKey = `videoPosition-${player.source}`;
+  const savedPosition = localStorage.getItem(storageKey);
+  if (savedPosition) {
+    player.once('loadedmetadata', () => {
+      player.currentTime = parseFloat(savedPosition);
+    });
+  }
+  player.on('timeupdate', function() {
+    localStorage.setItem(storageKey, player.currentTime);
+  });
+
+  // بهینه‌سازی دستورات کیبورد
+  document.addEventListener('keydown', function(e) {
+    if (document.activeElement.tagName === 'BODY') {
+      switch(e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          player.togglePlay();
+          break;
+        case 'm':
+          player.toggleMute();
+          break;
+        case 'f':
+          player.toggleFullscreen();
+          break;
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1 @@
+import{p as s}from"./BcqZkZus.js";const l=s("/img/illustrations/placeholders/flat/placeholder-search-5.svg"),r=s("/img/illustrations/placeholders/flat/placeholder-search-5-dark.svg");export{l as _,r as a};

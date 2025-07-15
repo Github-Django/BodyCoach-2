@@ -1,0 +1,1 @@
+function s(n){return`${n} per session`}function r(n){return`${n} (mins)`}function a(n){return`${n} تومان`}function e(n){return`$ ${n}K`}function t(n){return`${n} هزار تومان`}function u(n){return`${n} %`}export{a,r as b,u as c,t as d,e,s as p};

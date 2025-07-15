@@ -1,0 +1,38 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'css/step2.css' %}">
+{% endblock %}
+
+{% block content %}
+    <!-- Your existing HTML content -->
+    <div id="exercise-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <!-- Modal content -->
+    </div>
+
+    {% block extra_js %}
+        <!-- Third-party libraries first -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        
+        <!-- Then our custom JS files in the correct order -->
+        <script src="{% static 'js/training/core.js' %}"></script>
+        <script src="{% static 'js/training/exercises.js' %}"></script>
+        <script src="{% static 'js/training/superset.js' %}"></script>
+        <script src="{% static 'js/training/form-validation.js' %}"></script>
+        <script src="{% static 'js/training/custom-select.js' %}"></script>
+
+        <!-- Initialize everything after all scripts are loaded -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Check if everything is loaded correctly
+                console.log('DOM Content Loaded');
+                console.log('Modal element:', document.getElementById('exercise-modal'));
+                console.log('Add movement buttons:', document.querySelectorAll('.add-movement-btn'));
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

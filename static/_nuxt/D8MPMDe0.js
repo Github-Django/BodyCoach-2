@@ -1,0 +1,1 @@
+import{d as a,o,D as t,w as s,a as n,bW as _}from"./BcqZkZus.js";/* empty css        */const c=n("div",null,null,-1),m=a({__name:"starter-collapse",setup(l){return(r,p)=>{const e=_;return o(),t(e,null,{default:s(()=>[c]),_:1})}}});export{m as default};

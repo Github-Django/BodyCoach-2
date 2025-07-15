@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+{% extends 'home/base.html' %}
+
+{% block subject %}تنظیمات{% endblock %}
+{% block title %}تنظیمات / وعده غذایی{% endblock %}
+
+{% load static %}
+{% load widget_tweaks %}
+{% load jalali_tags %}
+
+{% block main %}
+<div>
+    <div class="w-full">
+        <div>
+            <form method="POST" action="" class="">
+                {% csrf_token %}
+                <div class="space-y-8">
+                    <div class="mx-auto flex w-full max-w-2xl flex-col">
+                        <div>
+                            <div>
+                                <div class="space-y-12">
+                                    <!-- عنوان فرم -->
+                                    <fieldset class="relative">
+                                        <legend class="mb-6">
+                                            <p class="nui-heading nui-heading-md nui-weight-medium nui-lead-none" tag="h3">
+                                                مشخصات وعده غذایی
+                                            </p>
+                                            <span class="nui-text nui-content-xs nui-weight-normal nui-lead-normal text-muted-400">
+                                                لطفاً اطلاعات مربوط به وعده غذایی (زمان و توضیحات) را وارد کنید.
+                                            </span>
+                                        </legend>
+
+                                        <!-- فیلد زمان وعده -->
+                                        <div class="grid grid-cols-12 gap-4">
+                                            <div class="col-span-12">
+                                                <div class="nui-input-wrapper nui-input-default nui-input-md nui-input-rounded-sm nui-has-icon">
+                                                    {{ form.time_of_day.label_tag }}
+                                                    <div class="nui-input-outer">
+                                                        {{ form.time_of_day|add_class:"nui-input" }}
+                                                        {% if form.time_of_day.errors %}
+                                                            <div class="text-danger">
+                                                                {{ form.time_of_day.errors|join:", " }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- فیلد توضیحات -->
+                                        <div class="grid grid-cols-12 gap-4 mt-4">
+                                            <div class="col-span-12">
+                                                <div class="nui-input-wrapper nui-input-default nui-input-md nui-input-rounded-sm">
+                                                    {{ form.description.label_tag }}
+                                                    <div class="nui-input-outer">
+                                                        {{ form.description|add_class:"nui-input" }}
+                                                        {% if form.description.errors %}
+                                                            <div class="text-danger">
+                                                                {{ form.description.errors|join:", " }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- جزئیات غذاهای مرتبط با وعده -->
+                                    <fieldset class="relative mt-8">
+                                        <legend class="mb-6">
+                                            <p class="nui-heading nui-heading-md nui-weight-medium nui-lead-none" tag="h3">
+                                                غذاهای مرتبط با وعده
+                                            </p>
+                                            <span class="nui-text nui-content-xs nui-weight-normal nui-lead-normal text-muted-400">
+                                                مقدار و نوع غذاهای این وعده را مشخص کنید.
+                                            </span>
+                                        </legend>
+                                        <div id="mealfood-formset">
+    {{ mealfood_formset.management_form }}
+    <div class="grid grid-cols-12 gap-4">
+        {% for form in mealfood_formset %}
+        <div class="col-span-12 grid grid-cols-12 gap-4">
+            <!-- Meal Type Dropdown -->
+            <div class="col-span-12 md:col-span-4">
+                <div class="nui-select-wrapper nui-select-default nui-select-md nui-select-rounded-sm nui-has-icon">
+                    {{ form.food.label_tag }}
+                    <div class="nui-select-outer">
+                        {{ form.food|add_class:"nui-select" }}
+                        {% if form.food.errors %}
+                        <div class="text-danger">{{ form.food.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="col-span-12 sm:col-span-4">
+                <div class="nui-input-wrapper nui-input-default nui-input-md nui-input-rounded-sm nui-has-icon">
+                    {{ form.quantity.label_tag }}
+                    <div class="nui-input-outer">
+                        {{ form.quantity|add_class:"nui-input" }}
+                        {% if form.quantity.errors %}
+                        <div class="text-danger">{{ form.quantity.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add New Row Button -->
+    <button type="button" class="btn btn-secondary mt-2" id="add-row">
+        افزودن ردیف جدید
+    </button>
+</div>
+
+                                    </fieldset>
+
+                                    <!-- دکمه‌های ذخیره و لغو -->
+                                    <div class="mt-5 flex flex-col-reverse text-end md:block md:space-x-3 md:space-x-reverse">
+{#                                        <a href="{% url 'meal_list' %}"#}
+{#                                           class="nui-button nui-button-lg nui-button-rounded-md nui-button-solid nui-button-muted w-full sm:w-44">#}
+{#                                            لغو#}
+{#                                        </a>#}
+                                        <button type="submit"
+                                                class="nui-button nui-button-lg nui-button-rounded-md nui-button-solid nui-button-primary w-full sm:w-44">
+                                            ذخیره
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت برای اضافه کردن ردیف -->
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+    const addRowButton = document.getElementById('add-row');
+    const formsetBody = document.querySelector('#mealfood-formset > .grid');
+    const totalForms = document.querySelector('#id_mealfood_set-TOTAL_FORMS');
+
+    addRowButton.addEventListener('click', function () {
+        const currentRowCount = parseInt(totalForms.value, 10);
+        const newRow = formsetBody.children[0].cloneNode(true);
+
+        Array.from(newRow.querySelectorAll('input, select')).forEach(input => {
+            const name = input.getAttribute('name').replace(/-\d+-/, `-${currentRowCount}-`);
+            const id = input.getAttribute('id').replace(/-\d+-/, `-${currentRowCount}-`);
+            input.setAttribute('name', name);
+            input.setAttribute('id', id);
+            input.value = '';
+        });
+
+        formsetBody.appendChild(newRow);
+        totalForms.value = currentRowCount + 1;
+    });
+});
+
+</script>
+{% endblock %}

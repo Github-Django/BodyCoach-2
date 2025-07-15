@@ -1,0 +1,1 @@
+import{_ as r}from"./oCSoAA5S.js";import{B as e,o as c,D as t}from"./BcqZkZus.js";/* empty css        */const a={};function n(s,m){const o=r;return c(),t(o,{class:"border-muted-200 dark:border-muted-700 rounded-lg border"})}const i=e(a,[["render",n]]);export{i as default};

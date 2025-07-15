@@ -1,0 +1,34 @@
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h3>تنظیمات تمرین‌ها</h3>
+    {{ formset.management_form }}
+    <div id="form-container">
+        {% for form in formset %}
+            <div class="exercise-set-form">
+                {{ form.as_p }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-form">افزودن تمرین جدید</button>
+    <button type="submit">ثبت برنامه تمرینی</button>
+</form>
+
+<script>
+// اضافه کردن فرم جدید برای تمرین
+document.getElementById('add-form').addEventListener('click', function() {
+    let formContainer = document.getElementById('form-container');
+    let totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    let formCount = parseInt(totalForms.value);
+
+    // ایجاد یک کپی از فرم آخر
+    let newForm = formContainer.children[0].cloneNode(true);
+    newForm.innerHTML = newForm.innerHTML.replace(/-0-/g, `-${formCount}-`);
+    newForm.innerHTML = newForm.innerHTML.replace(/_0_/g, `_${formCount}_`);
+
+    formContainer.appendChild(newForm);
+    totalForms.value = formCount + 1;
+});
+</script>

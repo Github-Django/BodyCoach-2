@@ -1,0 +1,1 @@
+import{B as e,o,c,b as n,cn as t}from"./BcqZkZus.js";/* empty css        */const a={};function s(_,f){const r=t;return o(),c("div",null,[n(r,{error:"An error has occured"})])}const d=e(a,[["render",s]]);export{d as default};

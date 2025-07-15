@@ -1,0 +1,1 @@
+import{B as o,o as c,c as a,b as s,au as n}from"./BcqZkZus.js";/* empty css        */const t={},r={class:"flex flex-wrap items-end gap-2"};function _(l,d){const e=n;return c(),a("div",r,[s(e,{class:"size-10 rounded"}),s(e,{class:"size-12 rounded-xl"}),s(e,{class:"size-16 rounded-full"})])}const f=o(t,[["render",_]]);export{f as default};

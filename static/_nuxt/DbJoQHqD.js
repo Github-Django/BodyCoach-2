@@ -1,0 +1,1 @@
+import{_ as t}from"./C5I0ggEt.js";import{B as s,o,c,a,b as r,w as n,e as _}from"./BcqZkZus.js";/* empty css        */const d={},i={class:"grid gap-6 md:grid-cols-2"},f={class:"text-muted-400 flex flex-col"};function l(m,p){const e=t;return o(),c("div",i,[a("div",f,[r(e,{href:"#"},{default:n(()=>[_(" من یک لینک هستم ")]),_:1})])])}const B=s(d,[["render",l]]);export{B as default};

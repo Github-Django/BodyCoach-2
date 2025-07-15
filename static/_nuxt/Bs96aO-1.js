@@ -1,0 +1,1 @@
+import{d as o,o as t,c as n,b as a,bK as _}from"./BcqZkZus.js";/* empty css        */const u=o({__name:"layouts",setup(c){return(s,r)=>{const e=_;return t(),n("div",null,[a(e)])}}});export{u as default};

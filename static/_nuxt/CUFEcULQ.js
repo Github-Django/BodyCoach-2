@@ -1,0 +1,1 @@
+import{B as o,o as s,c as t,b as c,au as a}from"./BcqZkZus.js";/* empty css        */const n={},_={class:"max-w-sm space-y-2"};function r(d,l){const e=a;return s(),t("div",_,[c(e,{class:"h-4 w-full rounded"}),c(e,{class:"h-4 w-[85%] rounded"})])}const u=o(n,[["render",r]]);export{u as default};

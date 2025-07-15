@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>برنامه تمرینی - {{ training_plan.athlete_profile.full_name }}</title>
+    <style>
+        @font-face {
+            font-family: 'Vazir';
+            src: url('file://{{ font_path }}') format('truetype');
+        }
+
+        body {
+            font-family: 'Vazir', sans-serif;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h5 {
+            font-size: 16px;
+            color: #333;
+            margin: 10px 0;
+            text-align: right;
+        }
+
+        .top-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 14px;
+            color: #777;
+            text-align: left;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #333;
+            margin: 20px 0 0 0;
+            text-align: right;
+        }
+
+        .header .date {
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* Add page break before each session */
+        .session {
+            margin: 20px 0;
+            page-break-before: auto;
+            page-break-inside: avoid;
+        }
+
+        .session-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 10px;
+            background: linear-gradient(45deg, #ff5722, #ffa726);
+            color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Changed from center to allow multiline items */
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #fff;
+            font-family: 'Vazir', sans-serif;
+        }
+
+        .exercise-item span {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .exercise-item .exercise-name {
+            flex: 1;
+            text-align: right;
+            margin-left: 20px;
+        }
+
+        .exercise-item .sets-reps {
+            white-space: nowrap;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+
+        .superset-plus {
+            color: #e63946;
+            font-weight: bold;
+            display: block;
+            margin: 5px 25px;
+        }
+
+        .triset-plus {
+            color: #0077b6;
+            font-weight: bold;
+            display: block;
+            margin: 5px 25px;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-50px);
+        }
+
+        .logo-image {
+            width: 200px;
+            height: auto;
+            max-width: 300px;
+            max-height: 300px;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .coach-info {
+            text-align: right;
+        }
+
+        .coach-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .address {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 0.5rem;
+        }
+
+        .instagram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #6b7280;
+        }
+
+        .instagram-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .instagram-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-left: 0.5rem;
+        }
+
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="pdf-content">
+    <div class="header">
+        <div class="top-left">
+            <div class="name">
+                بدنساز: {{ training_plan.athlete_profile.full_name }}
+                <br/>
+                <small>کد ورزشی: {{ training_plan.athlete_profile.unique_code }}</small>
+            </div>
+            <div class="date">تاریخ: {{ training_plan.jpublish }}</div>
+            <span>به مدت 5 هفته</span>
+        </div>
+        <h5 class="date">به نام دوست</h5>
+        <div class="logo">
+            <img src="{{ logo_url }}" alt="لوگو" class="logo-image">
+        </div>
+    </div>
+
+    {% for session_number, exercises in sessions.items %}
+        <div class="session">
+            <div class="session-header">جلسه {{ session_number }}</div>
+            <ul class="exercise-list">
+                {% for exercise_set in exercises %}
+                    <li class="exercise-item">
+                        <div class="exercise-name">
+                            <span class="underline">{{ forloop.counter }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            <!-- لینک برای حرکت اصلی -->
+                            {% if exercise_set.video_url %}
+                                <a href="{{ exercise_set.video_url }}" style="color: blue; text-decoration: none;">
+                                    {{ exercise_set.exercise.name }}
+                                </a>
+                            {% else %}
+                                {{ exercise_set.exercise.name }}
+                            {% endif %}
+
+                            <!-- لینک برای سوپرست -->
+                            {% if exercise_set.is_superset and exercise_set.paired_exercise %}
+                                <div class="superset-plus">+</div>
+                                {% if exercise_set.paired_exercise.video_url %}
+                                    <a href="{{ exercise_set.paired_exercise.video_url }}"
+                                       style="color: blue; text-decoration: none;">
+                                        {{ exercise_set.paired_exercise.name }}
+                                    </a>
+                                {% else %}
+                                    {{ exercise_set.paired_exercise.name }}
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- لینک برای تری‌ست -->
+                            {% if exercise_set.paired_superset %}
+                                <div class="triset-plus">+</div>
+                                {% if exercise_set.paired_superset.video_url %}
+                                    <a href="{{ exercise_set.paired_superset.video_url }}"
+                                       style="color: blue; text-decoration: none;">
+                                        {{ exercise_set.paired_superset.name }}
+                                    </a>
+                                {% else %}
+                                    {{ exercise_set.paired_superset.name }}
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <span class="sets-reps">{{ exercise_set.sets_reps }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+
+    <style>
+        a {
+            text-decoration: none !important;
+            color: blue;
+        }
+
+        a:hover {
+            text-decoration: none !important;
+        }
+    </style>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="coach-info">
+                <div class="coach-name">{{ coach_name }}</div>
+               <div class="instagram-link">
+        <svg class="instagram-icon" viewBox="0 0 24 24" fill="#E1306C" width="28" height="28"
+             style="margin-right: 5px;">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.012-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+    
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

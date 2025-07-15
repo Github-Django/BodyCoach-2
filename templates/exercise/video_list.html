@@ -1,0 +1,308 @@
+{% extends 'home/base.html' %}
+{% block subject %}لیست ویدئو ها{% endblock %}
+{% block title %}لیست ویدئو ها{% endblock %}
+{% load static %}
+{% block main %}
+
+    <div class="nuxt-loading-indicator"
+         style="position:fixed;top:0;right:0;left:0;pointer-events:none;width:auto;height:3px;opacity:0;background:rgb(var(--color-primary-500));background-size:Infinity% auto;transform:scaleX(0%);transform-origin:left;transition:transform 0.1s, height 0.4s, opacity 0.4s;z-index:999999;"></div>
+    <div>
+        <div>
+            <div>
+                <div class="mb-6 flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
+                    <div class="flex w-full items-center gap-4 sm:w-auto"><!--[-->
+                        <div class="nui-input-wrapper nui-input-default nui-input-md nui-input-rounded-sm nui-has-icon w-full sm:w-auto">
+                            <!---->
+                            <div class="nui-input-outer">
+                                <div class="nui-input-outer mb-4">
+                                    <div class="flex items-center">
+                                        <!-- فیلتر نام ویدیوها -->
+                                        <input type="text" class="nui-input" placeholder="فیلتر نام ویدیوها..."
+                                               id="nameFilter" oninput="fetchResults()">
+                                    </div>
+                                </div>
+
+                                <div class="nui-input-outer mb-4">
+                                    <div class="flex items-center">
+                                        <!-- فیلتر گروه عضلانی -->
+                                        <select name="muscle_group" class="nui-input" id="muscleGroupFilter"
+                                                onchange="fetchResults()">
+                                            <option value="">همه گروه‌های عضلانی</option>
+                                            <option value="chest">سینه</option>
+                                            <option value="triceps">پشت بازو</option>
+                                            <option value="biceps">جلوبازو</option>
+                                            <option value="shoulders">سرشانه</option>
+                                            <option value="back">زیربغل</option>
+                                            <option value="legs">پاها</option>
+                                            <option value="core">شکم و پهلو</option>
+                                            <option value="forearms">ساعد</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <script>
+                                    function fetchResults() {
+                                        const filterInput = document.getElementById('nameFilter').value;
+        const muscleGroupSelect = document.getElementById('muscleGroupFilter').value || '';
+
+                                        const url = new URL(window.location.href);
+                                        url.searchParams.set('name', filterInput);
+        url.searchParams.set('muscle_group', muscleGroupSelect);
+
+                                        fetch(url)
+                                            .then(response => response.text())
+                                            .then(data => {
+                                                const parser = new DOMParser();
+                                                const doc = parser.parseFromString(data, 'text/html');
+                                                const results = doc.querySelector('tbody');
+                                                document.querySelector('tbody').innerHTML = results.innerHTML;
+                                            })
+                                            .catch(error => console.error('Error fetching results:', error));
+                                    }
+                                </script><!----></div>
+                        </div><!--]--></div>
+
+                    <div class="flex w-full items-center justify-end gap-4 sm:w-auto"><!--[-->
+                        <div class="nui-select-wrapper nui-select-default nui-select-md nui-select-rounded-sm w-full sm:w-40">
+
+                            <!-- انتخاب شبکه اجتماعی و دکمه اشتراک‌گذاری -->
+
+                            <div class="flex w-full items-center justify-end gap-4 sm:w-auto">
+                                <div class="nui-select-wrapper nui-select-default nui-select-md nui-select-rounded-sm w-full sm:w-40">
+                                    <!-- فرم برای وارد کردن شماره و ارسال لینک -->
+                                    <div class="nui-card nui-card-rounded-lg nui-card-default p-2 mt-2">
+                                        <div class="mb-2">
+                                            <label for="phoneNumber" class="block text-sm">شماره تلفن
+                                                ورزشکار:</label>
+                                            <input type="text" id="phoneNumber" class="border p-1 w-full"
+                                                   placeholder="9123456789">
+                                        </div>
+                                        <div class="flex w-full items-center justify-between gap-3">
+                                            <a href="javascript:void(0);"
+                                               onclick="shareSelectedVideos('whatsapp')"
+                                               class="text-muted-400 flex size-9 items-center justify-center rounded-xl transition-all duration-300 hover:text-white hover:shadow-xl hover:bg-success-300 hover:shadow-indigo-500/30 dark:hover:shadow-indigo-800/30">
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100"
+                                                     height="100"
+                                                     viewBox="0 0 32 32">
+                                                    <path fill-rule="evenodd"
+                                                          d="M 24.503906 7.503906 C 22.246094 5.246094 19.246094 4 16.050781 4 C 9.464844 4 4.101563 9.359375 4.101563 15.945313 C 4.097656 18.050781 4.648438 20.105469 5.695313 21.917969 L 4 28.109375 L 10.335938 26.445313 C 12.078125 27.398438 14.046875 27.898438 16.046875 27.902344 L 16.050781 27.902344 C 22.636719 27.902344 27.996094 22.542969 28 15.953125 C 28 12.761719 26.757813 9.761719 24.503906 7.503906 Z M 16.050781 25.882813 L 16.046875 25.882813 C 14.265625 25.882813 12.515625 25.402344 10.992188 24.5 L 10.628906 24.285156 L 6.867188 25.269531 L 7.871094 21.605469 L 7.636719 21.230469 C 6.640625 19.648438 6.117188 17.820313 6.117188 15.945313 C 6.117188 10.472656 10.574219 6.019531 16.054688 6.019531 C 18.707031 6.019531 21.199219 7.054688 23.074219 8.929688 C 24.949219 10.808594 25.980469 13.300781 25.980469 15.953125 C 25.980469 21.429688 21.523438 25.882813 16.050781 25.882813 Z M 21.496094 18.445313 C 21.199219 18.296875 19.730469 17.574219 19.457031 17.476563 C 19.183594 17.375 18.984375 17.328125 18.785156 17.625 C 18.585938 17.925781 18.015625 18.597656 17.839844 18.796875 C 17.667969 18.992188 17.492188 19.019531 17.195313 18.871094 C 16.894531 18.722656 15.933594 18.40625 14.792969 17.386719 C 13.90625 16.597656 13.304688 15.617188 13.132813 15.320313 C 12.957031 15.019531 13.113281 14.859375 13.261719 14.710938 C 13.398438 14.578125 13.5625 14.363281 13.710938 14.1875 C 13.859375 14.015625 13.910156 13.890625 14.011719 13.691406 C 14.109375 13.492188 14.058594 13.316406 13.984375 13.167969 C 13.910156 13.019531 13.3125 11.546875 13.0625 10.949219 C 12.820313 10.367188 12.574219 10.449219 12.390625 10.4375 C 12.21875 10.429688 12.019531 10.429688 11.820313 10.429688 C 11.621094 10.429688 11.296875 10.503906 11.023438 10.804688 C 10.75 11.101563 9.980469 11.824219 9.980469 13.292969 C 9.980469 14.761719 11.050781 16.183594 11.199219 16.382813 C 11.347656 16.578125 13.304688 19.59375 16.300781 20.886719 C 17.011719 21.195313 17.566406 21.378906 18 21.515625 C 18.714844 21.742188 19.367188 21.710938 19.882813 21.636719 C 20.457031 21.550781 21.648438 20.914063 21.898438 20.214844 C 22.144531 19.519531 22.144531 18.921875 22.070313 18.796875 C 21.996094 18.671875 21.796875 18.597656 21.496094 18.445313 Z"></path>
+                                                </svg>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                               onclick="shareSelectedVideos('telegram')"
+                                               class="text-muted-400 flex size-9 items-center justify-center rounded-xl transition-all duration-300 hover:text-white hover:shadow-xl hover:bg-sky-500 hover:shadow-sky-500/30 dark:hover:shadow-sky-800/30">
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100"
+                                                     height="100"
+                                                     viewBox="0 0 32 32">
+                                                    <path d="M 26.070313 3.996094 C 25.734375 4.011719 25.417969 4.109375 25.136719 4.21875 L 25.132813 4.21875 C 24.847656 4.332031 23.492188 4.902344 21.433594 5.765625 C 19.375 6.632813 16.703125 7.757813 14.050781 8.875 C 8.753906 11.105469 3.546875 13.300781 3.546875 13.300781 L 3.609375 13.277344 C 3.609375 13.277344 3.25 13.394531 2.875 13.652344 C 2.683594 13.777344 2.472656 13.949219 2.289063 14.21875 C 2.105469 14.488281 1.957031 14.902344 2.011719 15.328125 C 2.101563 16.050781 2.570313 16.484375 2.90625 16.722656 C 3.246094 16.964844 3.570313 17.078125 3.570313 17.078125 L 3.578125 17.078125 L 8.460938 18.722656 C 8.679688 19.425781 9.949219 23.597656 10.253906 24.558594 C 10.433594 25.132813 10.609375 25.492188 10.828125 25.765625 C 10.933594 25.90625 11.058594 26.023438 11.207031 26.117188 C 11.265625 26.152344 11.328125 26.179688 11.390625 26.203125 C 11.410156 26.214844 11.429688 26.21875 11.453125 26.222656 L 11.402344 26.210938 C 11.417969 26.214844 11.429688 26.226563 11.441406 26.230469 C 11.480469 26.242188 11.507813 26.246094 11.558594 26.253906 C 12.332031 26.488281 12.953125 26.007813 12.953125 26.007813 L 12.988281 25.980469 L 15.871094 23.355469 L 20.703125 27.0625 L 20.8125 27.109375 C 21.820313 27.550781 22.839844 27.304688 23.378906 26.871094 C 23.921875 26.433594 24.132813 25.875 24.132813 25.875 L 24.167969 25.785156 L 27.902344 6.65625 C 28.007813 6.183594 28.035156 5.742188 27.917969 5.3125 C 27.800781 4.882813 27.5 4.480469 27.136719 4.265625 C 26.769531 4.046875 26.40625 3.980469 26.070313 3.996094 Z M 25.96875 6.046875 C 25.964844 6.109375 25.976563 6.101563 25.949219 6.222656 L 25.949219 6.234375 L 22.25 25.164063 C 22.234375 25.191406 22.207031 25.25 22.132813 25.308594 C 22.054688 25.371094 21.992188 25.410156 21.667969 25.28125 L 15.757813 20.75 L 12.1875 24.003906 L 12.9375 19.214844 C 12.9375 19.214844 22.195313 10.585938 22.59375 10.214844 C 22.992188 9.84375 22.859375 9.765625 22.859375 9.765625 C 22.886719 9.3125 22.257813 9.632813 22.257813 9.632813 L 10.082031 17.175781 L 10.078125 17.15625 L 4.242188 15.191406 L 4.242188 15.1875 C 4.238281 15.1875 4.230469 15.183594 4.226563 15.183594 C 4.230469 15.183594 4.257813 15.171875 4.257813 15.171875 L 4.289063 15.15625 L 4.320313 15.144531 C 4.320313 15.144531 9.53125 12.949219 14.828125 10.71875 C 17.480469 9.601563 20.152344 8.476563 22.207031 7.609375 C 24.261719 6.746094 25.78125 6.113281 25.867188 6.078125 C 25.949219 6.046875 25.910156 6.046875 25.96875 6.046875 Z"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <script>
+                                function shareSelectedVideos(platform) {
+                                    // انتخاب ویدیوهای انتخاب‌شده
+                                    const selectedVideos = Array.from(document.querySelectorAll('.video-checkbox:checked'));
+
+                                    // بررسی خالی بودن انتخاب‌ها
+                                    if (selectedVideos.length === 0) {
+                                        alert("لطفاً حداقل یک ویدیو انتخاب کنید.");
+                                        return;
+                                    }
+
+                                    // گرفتن شماره تلفن و الگوی اعتبارسنجی
+                                    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+                                    const phoneNumberPattern = /^\d{10}$/;
+
+                                    // اعتبارسنجی شماره تلفن
+                                    if (phoneNumber && !phoneNumberPattern.test(phoneNumber)) {
+                                        alert("لطفاً یک شماره تلفن معتبر وارد کنید (بدون +98).");
+                                        return;
+                                    }
+
+                                    // اضافه کردن +98 به شماره
+                                    const fullPhoneNumber = phoneNumber ? `+98${phoneNumber}` : '';
+
+                                    // ایجاد متن پیام
+                                    const messageText = selectedVideos.map(checkbox => {
+                                        const videoName = checkbox.getAttribute('data-name');
+                                        const videoUrl = checkbox.getAttribute('data-url');
+                                        return `${videoName} :\n[${window.location.origin}${videoUrl}]\n\n`;
+                                    }).join('');
+
+                                    // اضافه کردن پیام پایانی
+                                    const finalMessage = `${messageText}\nموفق باشید.`;
+
+                                    // ایجاد لینک اشتراک‌گذاری
+                                    let shareLink;
+                                    if (platform === 'whatsapp') {
+                                        shareLink = fullPhoneNumber ?
+                                            `https://wa.me/${fullPhoneNumber}?text=${encodeURIComponent(finalMessage)}` :
+                                            `https://wa.me/?text=${encodeURIComponent(finalMessage)}`;
+                                    } else if (platform === 'telegram') {
+                                        shareLink = fullPhoneNumber ?
+                                            `https://t.me/${fullPhoneNumber}?text=${encodeURIComponent(finalMessage)}` :
+                                            `https://t.me/share/url?url=${encodeURIComponent(finalMessage)}`;
+                                    }
+
+                                    // باز کردن لینک در تب جدید
+                                    window.open(shareLink, '_blank');
+
+                                    // پاک کردن شماره تلفن و لغو انتخاب چک‌باکس‌ها
+                                    document.getElementById('phoneNumber').value = ''; // پاک کردن فیلد شماره تلفن
+                                    selectedVideos.forEach(checkbox => checkbox.checked = false); // لغو انتخاب چک‌باکس‌ها
+                                }
+                            </script>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div><!--]-->
+        </div>
+    </div><!--[-->
+    <div>
+        <div>
+            <div class="w-full">
+                <div class="flex flex-col">
+                    <div class="nui-slimscroll overflow-x-auto rounded-md border-muted-200 dark:border-muted-700 border">
+                        <div class="inline-block min-w-full align-middle">
+                            <div class="overflow-hidden">
+                                <table class="divide-muted-200 dark:divide-muted-700 min-w-full table-fixed divide-y">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-muted-700 dark:text-muted-400 text-start font-sans font-semibold tracking-wider text-xs uppercase border-muted-200 dark:border-muted-700 last:border-e-none dark:bg-muted-800 border-e bg-white px-4 py-5 p-4">
+                                            <div class="flex items-center">
+                                                <div class="nui-checkbox nui-checkbox-rounded-full nui-checkbox-primary">
+                                                    <div class="nui-checkbox-outer">
+                                                        <input true-value="true" false-value="false"
+                                                               name="table-1-main"
+                                                               class="nui-checkbox-input" type="checkbox">
+                                                        <div class="nui-checkbox-inner"></div>
+                                                        <svg aria-hidden="true" viewbox="0 0 17 12"
+                                                             class="nui-icon-check">
+                                                            <path fill="currentColor"
+                                                                  d="M16.576.414a1.386 1.386 0 0 1 0 1.996l-9.404 9.176A1.461 1.461 0 0 1 6.149 12c-.37 0-.74-.139-1.023-.414L.424 6.998a1.386 1.386 0 0 1 0-1.996 1.47 1.47 0 0 1 2.046 0l3.68 3.59L14.53.414a1.47 1.47 0 0 1 2.046 0z"></path>
+                                                        </svg>
+                                                        <svg aria-hidden="true" viewbox="0 0 24 24"
+                                                             class="nui-icon-indeterminate">
+                                                            <path fill="none" stroke="currentColor"
+                                                                  stroke-linecap="round"
+                                                                  stroke-linejoin="round" stroke-width="4"
+                                                                  d="M2 12h20"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="nui-checkbox-label-wrapper"></div>
+                                                </div>
+                                            </div>
+                                        </th>
+
+                                        <th class="text-muted-700 dark:text-muted-400 text-start font-sans font-semibold tracking-wider text-xs uppercase border-muted-200 dark:border-muted-700 last:border-e-none dark:bg-muted-800 border-e bg-white px-4 py-5">
+                                            نام
+                                        </th>
+                                        <th class="text-muted-700 dark:text-muted-400 text-start font-sans font-semibold tracking-wider text-xs uppercase border-muted-200 dark:border-muted-700 last:border-e-none dark:bg-muted-800 border-e bg-white px-4 py-5">
+                                            توضیحات
+                                        </th>
+                                        <th class="text-muted-700 dark:text-muted-400 text-start font-sans font-semibold tracking-wider text-xs uppercase border-muted-200 dark:border-muted-700 last:border-e-none dark:bg-muted-800 border-e bg-white px-4 py-5">
+                                            عملیات
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="divide-muted-200 dark:divide-muted-700 dark:bg-muted-800 divide-y bg-white">
+
+
+<!-- در بخش ردیف جدول -->
+{% for video in videos %}
+    <tr class="hover:bg-muted-50 dark:hover:bg-muted-900 transition-colors duration-300">
+        <td class="font-alt whitespace-nowrap text-sm text-muted-800 dark:text-white p-4">
+            <div class="flex items-center">
+                <div class="nui-checkbox nui-checkbox-rounded-full nui-checkbox-primary">
+                    <div class="nui-checkbox-outer">
+                        <input true-value="true" false-value="false"
+                               class="nui-checkbox-input video-checkbox"
+                               type="checkbox"
+                               data-url="{% url 'exercise:video_player' video.id %}"
+                               data-name="{{ video.name }}">
+                        <div class="nui-checkbox-inner"></div>
+                        <svg aria-hidden="true" viewbox="0 0 17 12" class="nui-icon-check">
+                            <path fill="currentColor"
+                                  d="M16.576.414a1.386 1.386 0 0 1 0 1.996l-9.404 9.176A1.461 1.461 0 0 1 6.149 12c-.37 0-.74-.139-1.023-.414L.424 6.998a1.386 1.386 0 0 1 0-1.996 1.47 1.47 0 0 1 2.046 0l3.68 3.59L14.53.414a1.47 1.47 0 0 1 2.046 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td class="font-alt whitespace-nowrap text-sm text-muted-800 dark:text-white p-4">
+            <span class="font-medium">{{ video.name }}</span>
+        </td>
+        <td class="font-alt whitespace-nowrap text-sm text-muted-500 dark:text-white p-4">
+            {% if video.description %}
+                {{ video.description }} {% else %} - {% endif %}
+        </td>
+        <td class="font-alt whitespace-nowrap text-sm text-muted-800 dark:text-white p-4">
+            <a href="{% url 'exercise:video_player' video.id %}"
+               class="nui-button-icon nui-button-default nui-button-rounded-lg"
+               target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                </svg>
+            </a>
+        </td>
+    </tr>
+{% endfor %}                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <div class="nui-pagination nui-pagination-rounded-lg nui-pagination-primary">
+                    <ul class="nui-pagination-list nui-pagination-rounded-lg"><!--[-->
+                        <!--]-->
+                        <li><a aria-current="page" href="/layouts/table-list-3"
+                               class="router-link-active router-link-exact-active nui-pagination-link nui-active nui-pagination-rounded-lg"
+                               tabindex="0"> 1 </a></li><!----><!--[--><!--]--><!---->
+                        <li><a aria-current="page" href="/layouts/table-list-3?page=2"
+                               class="router-link-active router-link-exact-active nui-pagination-link nui-pagination-rounded-lg"
+                               tabindex="0">2</a></li><!--[--><!--]--></ul>
+                    <div class="nui-pagination-buttons nui-pagination-rounded-lg">
+                        <!--[--><!--]--><a aria-current="page"
+                                           href="/layouts/table-list-3"
+                                           class="router-link-active router-link-exact-active nui-pagination-button rtl:rotate-180"
+                                           tabindex="0"><!--[-->
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                             aria-hidden="true" role="img"
+                             class="icon pagination-button-icon" style="" width="1em"
+                             height="1em" viewBox="0 0 24 24" data-v-ca9947e1>
+                            <path fill="none" stroke="currentColor"
+                                  stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2" d="m15 18l-6-6l6-6"/>
+                        </svg><!--]--></a><a aria-current="page"
+                                             href="/layouts/table-list-3?page=2"
+                                             class="router-link-active router-link-exact-active nui-pagination-button rtl:rotate-180"
+                                             tabindex="0"><!--[-->
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                             aria-hidden="true" role="img"
+                             class="icon pagination-button-icon" style="" width="1em"
+                             height="1em" viewBox="0 0 24 24" data-v-ca9947e1>
+                            <path fill="none" stroke="currentColor"
+                                  stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2" d="m9 18l6-6l-6-6"/>
+                        </svg><!--]--></a><!--[--><!--]--></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,1 @@
+import{d,a3 as a}from"./BcqZkZus.js";const l=d({props:{ordered:{type:Boolean,default:!1},media:{type:Boolean,default:void 0}},setup(e,{slots:i}){return()=>{const n=e.ordered?"nui-list-ol":"nui-list-ul",t=i.default?.(),o=e.media??t?.some(s=>typeof s.type!="string");return a(e.ordered?"ol":"ul",{class:["nui-list",o&&"nui-list-media",!o&&`nui-list-base ${n}`]},t)}}});export{l as _};

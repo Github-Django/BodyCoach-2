@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Vazir';
+    src: url('../fonts/farsi-fonts-fa-num/vazir-300.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Vazir', sans-serif;
+}

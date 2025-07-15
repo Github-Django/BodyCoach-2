@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+{% extends 'home/base.html' %}
+{% block subject %}ایجاد برنامه تمرینی{% endblock %}
+{% block title %}ایجاد برنامه تمرینی{% endblock %}
+{% load static %}
+{% load train_tags %}
+{% block main %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    {#    <link rel="stylesheet" href="{% static 'css/train-planing.css' %}">#}
+    <link rel="stylesheet" href="{% static 'css/step2.css' %}">
+    <link rel="stylesheet" href="{% static 'css/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/notification.css' %}">
+
+    {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-gradient">
+                        <div class="alert-icon">✓</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'error' %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">✕</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'warning' %}
+                    <div class="alert alert-with-icon">
+                        <div class="alert-icon">!</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">i</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- کارت اطلاعات ورزشکار -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- هدر با اطلاعات اصلی -->
+            <div class="flex items-center gap-4 p-4 border-b">
+                <div class="flex-shrink-0 w-12 h-12 bg-violet-500 rounded-lg flex items-center justify-center">
+                    <span class="text-xl font-bold text-white">{{ athlete_profile.full_name|slice:":1" }}</span>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-bold">{{ athlete_profile.full_name }}</h2>
+                        <span class="text-sm text-gray-500">(کد {{ athlete_profile.unique_code }})</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                        <span>{{ athlete_profile.age }} سال</span>
+                        <span>{{ athlete_profile.height|floatformat:"-0" }} سانتی‌متر</span>
+                        <span>{{ athlete_profile.weight|floatformat:"-0" }} کیلوگرم</span>
+                        <span dir="ltr">{{ athlete_profile.mobile_phone|slice:"3:"|default:"-"|add:"0" }}</span>
+                        {% if athlete_profile.telegram_whatsapp_phone %}
+                            <span dir="ltr" class="text-blue-600">واتساپ/تلگرام: {{ athlete_profile.telegram_whatsapp_phone }}</span>
+                        {% endif %}
+                </div>
+            </div>
+        </div>
+
+            <!-- اطلاعات تکمیلی -->
+            <div class="grid grid-cols-4 gap-4 p-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-violet-500"></div>
+                    <span class="text-sm">سابقه تمرین: <span class="font-medium">{{ athlete_profile.training_history|default:"ندارد" }}</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full {% if athlete_profile.injuries %}bg-red-500{% else %}bg-green-500{% endif %}"></div>
+                    <span class="text-sm">آسیب‌دیدگی: <span class="font-medium">{{ athlete_profile.injuries|default:"ندارد" }}</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <span class="text-sm">مکمل‌ها: <span class="font-medium">{{ athlete_profile.supplements|default:"ندارد" }}</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span class="text-sm">هدف: <span class="font-medium">{{ athlete_profile.get_motivation_goal_display|default:"-" }}</span></span>
+                </div>
+                        {% if athlete_profile.body_test_file %}
+                <div class="flex items-center gap-2 col-span-4">
+                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                    <span class="text-sm">فایل تست بادی: <a href="{{ athlete_profile.body_test_file.url }}" class="text-blue-600 hover:underline" target="_blank">مشاهده فایل</a></span>
+                </div>
+                        {% endif %}
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div>
+        <div class="pb-20">
+            <div class="grid grid-cols-12 gap-6">
+                <div class="ltablet:col-span-8 col-span-12 lg:col-span-8">
+                    <div class="flex flex-col gap-6">
+                        <div class="container mx-auto px-4 py-8">
+
+
+                            <form method="post" id="training-plan-form">
+                                {% csrf_token %}
+                                {{ formset.management_form }}
+
+                                <div class="space-y-6">
+                                    {% for session_num in num_sessions %}
+                                        <div class="session-container p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+                                            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                                                <h2 class="nui-heading nui-heading-xl nui-weight-medium nui-lead-normal text-muted-800 dark:text-muted-100">
+                                                    جلسه {{ session_num }}</h2>
+                                                <button type="button"
+                                                        class="add-movement-btn flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl text-lg font-bold hover:scale-105 active:scale-95"
+                                                        data-session="{{ session_num }}">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                    </svg>
+                                                    افزودن حرکت
+                                                </button>
+                                            </div>
+
+                                            <div id="exercises-list-{{ session_num }}" class="space-y-3">
+                                                <!-- Exercises will be added here dynamically -->
+                                            </div>
+                                            
+                                            <!-- Empty state with add button -->
+                                            <div class="empty-state flex flex-col items-center justify-center py-8 opacity-60" 
+                                                 id="empty-state-{{ session_num }}"
+                                                 style="display: block;">
+                                                <svg class="w-16 h-16 text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                </svg>
+                                                <p class="text-gray-500 text-lg mb-4">هنوز حرکتی اضافه نشده است</p>
+                                                <button type="button"
+                                                        class="add-movement-btn px-6 py-3 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-xl transition-all duration-200 text-lg font-bold flex items-center gap-2"
+                                                        data-session="{{ session_num }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                    </svg>
+                                                    افزودن اولین حرکت
+                                                </button>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mt-12 mb-8 flex justify-center">
+                                    <button type="submit" id="save-training-plan-btn"
+                                            class="px-12 py-6 text-2xl font-extrabold text-white bg-green-500 hover:bg-green-600 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-4 cursor-pointer focus:outline-none focus:ring-4 focus:ring-green-300"
+                                            onclick="return validateAndSubmitForm()">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        ذخیره برنامه
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Exercise Selection Modal -->
+                            <!-- Exercise Selection Modal -->
+                            <div id="exercise-modal"
+                                 class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div class="bg-white rounded-lg w-[98vw] h-[98vh] mx-1 flex flex-col">
+                                    <!-- تغییر بخش هدر مودال برای اضافه کردن کانتینر حرکات انتخاب شده -->
+                                    <div class="flex justify-between items-center p-4 border-b">
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="nui-heading nui-heading-md nui-weight-medium nui-lead-normal font-bold text-xl">جلسه <span id="modal-session-number" class="font-bold text-xl"></span></h3>
+                                            <div id="selected-exercises-container" class="flex gap-2 overflow-x-auto ml-4 max-w-md"></div>
+                                        </div>
+                                        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex flex-1 overflow-hidden">
+                                        <!-- Main Content (Left Side - 70%) -->
+                                        <div class="flex-grow flex flex-col w-9/12">
+                                            <!-- Search Input -->
+                                            <div class="p-4 border-b">
+                                                <input type="text"
+                                                       id="exercise-search"
+                                                       class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                                       placeholder="جستجوی حرکت..."
+                                                       dir="rtl">
+                                            </div>
+
+                                            <!-- Exercise List -->
+                                            <div class="flex-1 overflow-y-auto">
+                                                <div class="p-4 bg-gray-50 border-b">
+                                                    <div id="exercise-list"
+                                                         class="mx-auto grid gap-4 sm:grid-cols-3"></div>
+                                                </div>
+
+                                                <!-- Categories Grid -->
+                                                <div class="p-4">
+                                                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                        {% for category, subcategories in grouped_subcategories.items %}
+                                                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                                                <div class="flex flex-wrap gap-2">
+                                                                    {% for subcategory in subcategories %}
+                                                                        <button type="button"
+                                                                                class="subcategory-btn w-full md:w-auto px-12 py-8 text-3xl font-extrabold bg-primary-50 hover:bg-primary-100 rounded-full transition-all duration-300 border-2 border-primary-200 hover:border-primary-300 text-primary-700 hover:text-primary-900 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2"
+                                                                                data-subcategory="{{ subcategory.id }}">
+                                                                            {{ subcategory.name }}
+                                                                        </button>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Last Training Plan (Right Side - 30%) -->
+                                        <div class="w-3/12 border-r border-gray-200 overflow-y-auto">
+                                            <div class="nui-card nui-card-rounded-md nui-card-default p-6">
+                                                <h3 class="nui-heading nui-heading-md nui-weight-medium nui-lead-normal">
+                                                    آخرین برنامه تمرینی</h3>
+                                                {% if last_plan_sessions %}
+                                                    <p class="nui-text nui-content-sm nui-weight-medium nui-lead-none text-muted-400"
+                                                       style="text-align: left">
+                                                        تاریخ: {{ last_training_plan.jpublish }}
+                                                    </p>
+                                                    {% for session_number, exercises in last_plan_sessions.items %}
+                                                        <div class="session">
+                                                            <div class="session-header nui-heading nui-heading-md nui-weight-medium nui-lead-normal">
+                                                                جلسه {{ session_number }}
+                                                            </div>
+                                                            <ul class="exercise-list">
+                                                                {% for exercise_set in exercises %}
+                                                                    <li class="nui-heading nui-heading-md nui-weight-medium nui-lead-normal exercise-item">
+                                            <span>
+                                                <span class="underline">{{ forloop.counter }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                {{ exercise_set.exercise.name }}
+                                                {% if exercise_set.is_superset and exercise_set.paired_exercise %}
+                                                    <br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <span style="color: #e63946; font-weight: bold;"> + </span>&nbsp;
+                                                    &nbsp;
+                                                    {{ exercise_set.paired_exercise.name }}
+                                                {% endif %}
+                                                {% if exercise_set.paired_superset %}
+                                                    <br/> <span style="color: #0077b6; font-weight: bold;"> + </span>
+                                                    &nbsp;&nbsp;
+                                                    {{ exercise_set.paired_superset.name }}
+                                                {% endif %}
+                                            </span>
+                                                                        <span>{{ exercise_set.sets_reps }}</span>
+                                                                    </li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <p>هیچ برنامه تمرینی قبلی وجود ندارد.</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bottom Actions -->
+                                    <div class="border-t p-4 bg-gray-50">
+                                        <div class="flex justify-between items-center gap-4">
+                                            <div class="flex items-center gap-4">
+                                                <button type="button" id="make-triset" 
+                                                        class="px-6 py-3 text-lg font-bold bg-purple-500 hover:bg-purple-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="سه حرکت آخر انتخاب شده را به صورت تری ست ثبت می‌کند"
+                                                        disabled>
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                    </svg>
+                                                    ثبت تری ست
+                                                </button>
+                                                <button type="button" id="make-superset" 
+                                                        class="px-6 py-3 text-lg font-bold bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="دو حرکت آخر انتخاب شده را به صورت سوپرست ثبت می‌کند"
+                                                        disabled>
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                                    </svg>
+                                                    ثبت سوپرست
+                                                </button>
+                                            </div>
+                                            <div class="flex items-center gap-4">
+                                                <button type="button" id="confirm-selection"
+                                                        class="px-6 py-3 text-lg font-bold bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    ثبت انتخاب‌ها
+                                                </button>
+                                                <button type="button" id="cancel-selection"
+                                                        class="px-6 py-3 text-lg font-bold bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    لغو انتخاب
+                                                </button>
+                                                <button type="button" id="finish-and-close"
+                                                        class="px-6 py-3 text-lg font-bold bg-green-500 hover:bg-green-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    اتمام و بستن
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <style>
+                                /* Preserve the existing training plan styles */
+                                .session {
+                                    margin-bottom: 20px;
+                                    background: white;
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                }
+
+                                .session-header {
+                                    background: #f8f9fa;
+                                    padding: 10px 15px;
+                                    border-bottom: 1px solid #e9ecef;
+                                    font-weight: bold;
+                                }
+
+                                .exercise-list {
+                                    list-style: none;
+                                    padding: 0;
+                                    margin: 0;
+                                }
+
+                                .exercise-item {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: flex-start;
+                                    padding: 12px 15px;
+                                    border-bottom: 1px solid #e9ecef;
+                                }
+
+                                .exercise-item:last-child {
+                                    border-bottom: none;
+                                }
+
+                                .exercise-item span {
+                                    font-size: 0.9rem;
+                                }
+
+                                .line-clamp-2 {
+                                    display: -webkit-box;
+                                    -webkit-line-clamp: 2;
+                                    -webkit-box-orient: vertical;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                }
+
+                                /* کانتینر اصلی */
+                                .checkbox-container {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 12px;
+                                    padding: 8px;
+                                    border-radius: 8px;
+                                    transition: background-color 0.2s;
+                                }
+
+                                /* حالت انتخاب شده کل آیتم */
+                                .checkbox-container.selected {
+                                    background-color: rgba(79, 70, 229, 0.05);
+                                }
+
+                                /* برچسب متنی */
+                                .checkbox-label {
+                                    font-size: 16px;
+                                    color: #1F2937;
+                                    font-weight: 500;
+                                }
+
+                                /* نشانگر انتخاب */
+                                .selection-indicator {
+                                    opacity: 0;
+                                    transition: opacity 0.2s;
+                                }
+
+                                .checkbox-container.selected .selection-indicator {
+                                    opacity: 1;
+                                }
+
+                                .custom-checkbox {
+                                    /* حالت پایه */
+                                    position: relative;
+                                    width: 24px;
+                                    height: 24px;
+                                    border: 2px solid #E2E8F0;
+                                    border-radius: 6px;
+                                    background-color: white;
+                                    transition: all 0.2s ease-in-out;
+                                    cursor: pointer;
+                                    
+                                    /* سایه ظریف برای عمق */
+                                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                                }
+
+                                /* حالت انتخاب شده */
+                                .custom-checkbox.checked {
+                                    border-color: #4F46E5;
+                                    background-color: #4F46E5;
+                                }
+
+                                /* آیکون تیک */
+                                .custom-checkbox.checked::after {
+                                    content: '';
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                    width: 14px;
+                                    height: 14px;
+                                    background-image: url('path-to-checkmark.svg');
+                                    opacity: 1;
+                                }
+
+                                /* انیمیشن هاور */
+                                .custom-checkbox:hover {
+                                    border-color: #4F46E5;
+                                    transform: scale(1.05);
+                                }
+
+                                /* حالت فوکوس برای دسترسی‌پذیری */
+                                .custom-checkbox:focus {
+                                    outline: none;
+                                    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+                                }
+                            </style>
+                        </div>
+                    </div>
+                </div>
+                <div class="ltablet:col-span-4 col-span-12 lg:col-span-4">
+                    <div class="flex flex-col gap-6">
+                        <div class="nui-card nui-card-rounded-md nui-card-default p-6" elevated="">
+                            <link rel="stylesheet" href="{% static 'css/train-planing.css' %}">
+
+                            {% if last_plan_sessions %}
+                                <h3 class="nui-heading nui-heading-md nui-weight-medium nui-lead-normal">آخرین برنامه
+                                    تمرینی</h3>
+                                <p class="nui-text nui-content-sm nui-weight-medium nui-lead-none text-muted-400"
+                                   style="text-align: left">تاریخ: {{ last_training_plan.jpublish }}</p>
+                                {% for session_number, exercises in last_plan_sessions.items %}
+                                    <div class="session">
+                                        <div class="session-header nui-heading nui-heading-md nui-weight-medium nui-lead-normal">
+                                            جلسه {{ session_number }}</div>
+                                        <ul class="exercise-list">
+                                            {% for exercise_set in exercises %}
+                                                <li class="nui-heading nui-heading-md nui-weight-medium nui-lead-normal exercise-item">
+                        <span>
+                            <span class="underline">{{ forloop.counter }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            {{ exercise_set.exercise.name }}
+                            {% if exercise_set.is_superset and exercise_set.paired_exercise %}
+                                <br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="color: #e63946; font-weight: bold;"> + </span>&nbsp;&nbsp;
+                                {{ exercise_set.paired_exercise.name }}
+                            {% endif %}
+                            {% if exercise_set.paired_superset %}
+                                <br/> <span style="color: #0077b6; font-weight: bold;"> + </span>&nbsp;&nbsp;
+                                {{ exercise_set.paired_superset.name }}
+                            {% endif %}
+                        </span>
+                                            <span>{{ exercise_set.sets_reps }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endfor %}
+                            {% else %}
+                                <p>هیچ برنامه تمرینی قبلی وجود ندارد.</p>
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Core state management
+            let currentSession = null;
+            let totalFormsCount = 0;
+            let selectedExercises = []; // آرایه برای ذخیره ترتیب انتخاب‌ها
+            let selectionOrder = []; // آرایه جدید برای ذخیره ترتیب انتخاب‌ها
+            const modal = document.getElementById('exercise-modal');
+            const exerciseList = document.getElementById('exercise-list');
+            const totalFormsInput = document.querySelector('[name="exercise_set-TOTAL_FORMS"]');
+            const searchInput = document.getElementById('exercise-search');
+            
+            // آرایه برای ذخیره حرکات هر جلسه
+            const sessionExercisesMap = {};
+            
+            searchInput.addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const exerciseElements = document.querySelectorAll('.exercise-checkbox');
+
+                exerciseElements.forEach(checkbox => {
+                    const exerciseDiv = checkbox.closest('label').parentElement;
+                    const exerciseName = checkbox.dataset.name.toLowerCase();
+
+                    if (exerciseName.includes(searchTerm)) {
+                        exerciseDiv.style.display = '';
+                    } else {
+                        exerciseDiv.style.display = 'none';
+                    }
+                });
+            });
+            
+            // تابع بروزرسانی نمایش حرکات انتخاب شده در مودال
+            function updateSelectedExercisesDisplay() {
+                const container = document.getElementById('selected-exercises-container');
+                container.innerHTML = '';
+                
+                // بررسی و نمایش لاگ برای رفع خطا
+                console.log('وضعیت حرکات انتخاب شده:', {
+                    currentSession,
+                    selectedExercises,
+                    sessionExercisesMap
+                });
+                
+                // اگر برای جلسه فعلی حرکتی انتخاب شده باشد
+                if (selectedExercises && selectedExercises.length > 0) {
+                    selectedExercises.forEach((exercise, index) => {
+                        const badge = document.createElement('div');
+                        badge.className = 'bg-primary-100 text-primary-800 text-sm font-medium px-2.5 py-0.5 rounded whitespace-nowrap flex items-center gap-1';
+                        badge.innerHTML = `
+                            <span>${index + 1}. ${exercise.name.substring(0, 15)}${exercise.name.length > 15 ? '...' : ''}</span>
+                        `;
+                        container.appendChild(badge);
+                    });
+                } else {
+                    // اگر هیچ حرکتی انتخاب نشده باشد
+                    const emptyBadge = document.createElement('div');
+                    emptyBadge.className = 'text-gray-500 text-sm';
+                    emptyBadge.textContent = 'هیچ حرکتی انتخاب نشده است';
+                    container.appendChild(emptyBadge);
+                }
+            }
+            
+            // تابع برای استخراج حرکات موجود در جلسه‌ی فعلی
+            function extractExistingExercisesForSession(sessionNumber) {
+                const exerciseRows = document.querySelectorAll(`#exercises-list-${sessionNumber} [id^="exercise-row-"]`);
+                const exercises = [];
+                
+                console.log(`استخراج حرکات برای جلسه ${sessionNumber}:`, exerciseRows.length, 'حرکت یافت شد');
+                
+                exerciseRows.forEach(row => {
+                    const exerciseNameElement = row.querySelector('.flex-grow.font-medium');
+                    if (exerciseNameElement) {
+                        // استخراج نام حرکت
+                        let exerciseName = exerciseNameElement.textContent.trim();
+                        
+                        // حذف متن اضافی مثل "+ سوپرست با" یا "+ تری ست با"
+                        exerciseName = exerciseName.split(/\+\s+(سوپرست|تری ست)\s+با/)[0].trim();
+                        
+                        // پیدا کردن شناسه حرکت
+                        const exerciseIdInput = row.querySelector('input[name$="-exercise"]');
+                        const exerciseId = exerciseIdInput ? exerciseIdInput.value : row.id.replace('exercise-row-', '');
+                        
+                        // ساخت آبجکت حرکت
+                        const exerciseObj = {
+                            id: exerciseId,
+                            name: exerciseName
+                        };
+                        
+                        exercises.push(exerciseObj);
+                        console.log('حرکت استخراج شد:', exerciseObj);
+                    }
+                });
+                
+                return exercises;
+            }
+
+            // Category mappings and other existing code...
+            // ... existing code ...
+
+            // Exercise filtering and display
+            async function filterExercises(subcategoryId) {
+                exerciseList.innerHTML = `
+            <div class="flex justify-center items-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        `;
+
+                try {
+                    const response = await fetch(`/train/filter-exercises/?muscle_group=${encodeURIComponent(subcategoryId)}`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    const exercises = data.exercises;
+
+                    if (!exercises || exercises.length === 0) {
+                        exerciseList.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        هیچ حرکتی برای این دسته‌بندی یافت نشد
+                    </div>
+                `;
+                        return;
+                    }
+
+                    const groupedExercises = {
+                        dumbbell: exercises.filter(ex => ex.category === 'dumbbell'),
+                        barbell: exercises.filter(ex => ex.category === 'barbell'),
+                        other: exercises.filter(ex => ex.category === 'other')
+                    };
+
+                    const container = document.createElement('div');
+                    container.className = 'flex flex-row gap-6 nui-heading nui-heading-xl nui-weight-medium nui-lead-normal text-muted-800 dark:text-muted-100 mb-2';
+                    ['dumbbell', 'barbell', 'other'].forEach(category => {
+                        const exercises = groupedExercises[category];
+                        if (!exercises || exercises.length === 0) return;
+
+                        const column = createExerciseColumn(category, exercises);
+                        container.appendChild(column);
+                    });
+
+                    exerciseList.innerHTML = '';
+                    exerciseList.appendChild(container);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    exerciseList.innerHTML = `
+                <div class="text-center py-4 text-red-500">
+                    خطا در بارگذاری حرکات. لطفاً دوباره تلاش کنید.
+                </div>
+            `;
+                }
+            }
+
+            function createExerciseElement(exercise) {
+                const exerciseDiv = document.createElement('div');
+                exerciseDiv.className = 'bg-white rounded-lg border hover:shadow-md transition-all duration-200';
+
+                exerciseDiv.innerHTML = `
+        <label class="flex items-center cursor-pointer w-full p-4 gap-4">
+            <div class="relative flex-shrink-0">
+                <input type="checkbox"
+                       class="exercise-checkbox form-checkbox h-6 w-6 text-blue-600 rounded border-gray-300"
+                       value="${exercise.id}"
+                       data-name="${exercise.name}"
+                       data-muscle-group="${exercise.muscle_group}">
+            </div>
+            <div class="flex-1 min-w-0 flex items-center gap-4">
+                <div class="flex-1">
+                    <p class="text-base text-right" 
+                       style="direction: rtl; 
+                              width: 32ch; 
+                              text-align: justify; 
+                              word-wrap: break-word;
+                              line-height: 1.5;
+                              margin: 0;
+                              padding-left: 1rem;"
+                       title="${exercise.name}">
+                        ${exercise.name}
+                    </p>
+                </div>
+                ${exercise.gif_url ? `
+                    <div class="flex-shrink-0 w-32 h-32">
+                        <img src="${exercise.gif_url}"
+                             alt="${exercise.name}"
+                             class="w-full h-full object-cover rounded"
+                             loading="lazy">
+                    </div>
+                ` : ''}
+            </div>
+        </label>
+    `;
+
+                const checkbox = exerciseDiv.querySelector('.exercise-checkbox');
+                checkbox.addEventListener('change', handleCheckboxChange);
+
+                return exerciseDiv;
+            }
+
+            function createExerciseColumn(category, exercises) {
+                const categoryTitles = {
+                    'dumbbell': 'دمبل',
+                    'barbell': 'هالتر',
+                    'other': 'سیم کش و دستگاه'
+                };
+
+                const categoryClasses = {
+                    'dumbbell': 'bg-blue-50 border-blue-200',
+                    'barbell': 'bg-green-50 border-green-200',
+                    'other': 'bg-yellow-50 border-yellow-200'
+                };
+
+                const column = document.createElement('div');
+                column.className = `flex-1 min-w-[350px] rounded-lg border ${categoryClasses[category]}`;
+
+                column.innerHTML = `
+        <div class="mb-4 pt-4 px-4">
+            <h3 class="text-lg font-bold text-center">
+                ${categoryTitles[category]}
+                <span class="text-sm font-normal mr-2">(${exercises.length})</span>
+            </h3>
+        </div>
+        <div class="flex flex-col gap-2 px-4 pb-4">
+            <!-- Exercise items will be added here -->
+        </div>
+    `;
+
+                const exerciseContainer = column.querySelector('.flex-col');
+                exercises.forEach(exercise => {
+                    const exerciseElement = createExerciseElement(exercise);
+                    exerciseContainer.appendChild(exerciseElement);
+                });
+
+                return column;
+            }
+
+            function handleCheckboxChange(e) {
+                const checkbox = e.target;
+                const exerciseData = {
+                    id: checkbox.value,
+                    name: checkbox.dataset.name,
+                    muscle_group: checkbox.dataset.muscleGroup
+                };
+                
+                console.log('تغییر وضعیت چک‌باکس:', {
+                    checked: checkbox.checked,
+                    exerciseData
+                });
+
+                if (checkbox.checked) {
+                    // اضافه کردن به لیست انتخاب‌ها و ذخیره ترتیب
+                    selectedExercises.push(exerciseData);
+                    selectionOrder.push(exerciseData.id);
+                } else {
+                    // حذف از لیست انتخاب‌ها و ترتیب
+                    selectedExercises = selectedExercises.filter(ex => ex.id !== exerciseData.id);
+                    selectionOrder = selectionOrder.filter(id => id !== exerciseData.id);
+                }
+                
+                // بروزرسانی نمایش حرکات انتخاب شده
+                updateSelectedExercisesDisplay();
+                updateSupersetButtonState();
+            }
+
+            function updateSupersetButtonState() {
+                const supersetButton = document.getElementById('make-superset');
+                const trisetButton = document.getElementById('make-triset');
+                
+                if (supersetButton && trisetButton) {
+                    const hasEnoughForSuperset = selectedExercises.length >= 2;
+                    const hasEnoughForTriset = selectedExercises.length >= 3;
+                    
+                    supersetButton.disabled = !hasEnoughForSuperset;
+                    trisetButton.disabled = !hasEnoughForTriset;
+                    
+                    // اضافه کردن کلاس‌های opacity برای حالت disabled
+                    supersetButton.classList.toggle('opacity-50', !hasEnoughForSuperset);
+                    trisetButton.classList.toggle('opacity-50', !hasEnoughForTriset);
+                    
+                    // اضافه کردن cursor-not-allowed برای حالت disabled
+                    supersetButton.classList.toggle('cursor-not-allowed', !hasEnoughForSuperset);
+                    trisetButton.classList.toggle('cursor-not-allowed', !hasEnoughForTriset);
+                }
+            }
+
+            function createSuperset(exercises) {
+                if (exercises.length !== 2) return;
+
+                const [firstExercise, secondExercise] = exercises;
+                const formIndex = totalFormsCount;
+                const exerciseId = Date.now();
+                const sessionExercisesList = document.getElementById(`exercises-list-${currentSession}`);
+
+                const exerciseRow = document.createElement('div');
+                exerciseRow.id = `exercise-row-${exerciseId}`;
+                exerciseRow.className = 'border rounded p-4 mb-4 nui-heading nui-heading-sm nui-weight-medium nui-lead-normal relative top-0.5 text-xs nui-radio-label-text';
+
+                exerciseRow.innerHTML = `
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <input type="hidden" name="exercise_set-${formIndex}-exercise" value="${firstExercise.id}">
+                    <input type="hidden" name="exercise_set-${formIndex}-session_number" value="${currentSession}">
+                    <input type="hidden" name="exercise_set-${formIndex}-is_superset" value="true">
+                    <input type="hidden" name="exercise_set-${formIndex}-paired_exercise" value="${secondExercise.id}">
+
+                    <span class="flex-grow font-medium">
+                        ${firstExercise.name}
+                        <span class="text-primary-500">+ سوپرست با</span>
+                        ${secondExercise.name}
+                    </span>
+
+                    ${createCustomSelect(formIndex)}
+
+                    <button type="button" class="text-red-500 hover:text-red-700 delete-exercise">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+
+                sessionExercisesList.appendChild(exerciseRow);
+                const customSelect = exerciseRow.querySelector('.custom-select');
+                initializeCustomSelect(customSelect);
+                totalFormsCount++;
+                updateTotalForms();
+                
+                // نمایش اعلان موفقیت
+                notificationManager.show(`سوپرست "${firstExercise.name}" و "${secondExercise.name}" با موفقیت ثبت شد و به جلسه اضافه شد`);
+            }
+
+            // Form management
+            function updateTotalForms() {
+                const forms = document.querySelectorAll('[name$="-exercise"]');
+                totalFormsCount = forms.length;
+                totalFormsInput.value = totalFormsCount;
+            }
+
+            function closeModal() {
+                // قبل از بستن مودال، حرکات انتخاب شده را برای جلسه فعلی ذخیره می‌کنیم
+                // اما فقط اگر کاربر روی دکمه‌های ثبت یا اتمام کلیک کرده باشد، نه لغو یا بستن
+                console.log('بستن مودال و حفظ وضعیت حرکات جلسه');
+                
+                modal.classList.add('hidden');
+                exerciseList.innerHTML = '';
+                selectedExercises = [];
+                selectionOrder = [];
+                document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // پاک کردن فیلد جستجو
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+            }
+
+            function updateSelectionVisualFeedback() {
+                document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                    const exerciseDiv = checkbox.closest('.bg-white');
+                    if (selectedExercises.length > 0) {
+                        exerciseDiv.classList.add('border-blue-500');
+                        // اضافه کردن tooltip برای حالت سوپرست
+                        exerciseDiv.setAttribute('title', 'حالت سوپرست (حداکثر ۲ انتخاب)');
+                    } else {
+                        exerciseDiv.classList.remove('border-blue-500');
+                        exerciseDiv.setAttribute('title', 'حالت چند انتخابی');
+                    }
+                });
+            }
+
+            // Initialize event listeners
+            document.querySelectorAll('.add-movement-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentSession = this.dataset.session;
+                    document.getElementById('modal-session-number').textContent = currentSession;
+                    
+                    console.log('باز کردن مودال برای جلسه:', currentSession);
+                    
+                    // بررسی می‌کنیم آیا این جلسه قبلاً حرکاتی داشته یا نه
+                    if (!sessionExercisesMap[currentSession]) {
+                        // اگر در نقشه ما موجود نیست، حرکات موجود در DOM را استخراج می‌کنیم
+                        const extractedExercises = extractExistingExercisesForSession(currentSession);
+                        sessionExercisesMap[currentSession] = extractedExercises;
+                        console.log('حرکات استخراج شده از DOM برای جلسه:', extractedExercises);
+                    }
+                    
+                    // خالی کردن آرایه‌های انتخاب فعلی
+                    selectedExercises = [];
+                    selectionOrder = [];
+                    
+                    // نمایش حرکات انتخاب شده از قبل برای این جلسه در بالای مودال
+                    if (sessionExercisesMap[currentSession] && sessionExercisesMap[currentSession].length > 0) {
+                        console.log('حرکات موجود در جلسه برای نمایش:', sessionExercisesMap[currentSession]);
+                        selectedExercises = sessionExercisesMap[currentSession].map(exercise => ({ ...exercise }));
+                    }
+                    
+                    // نمایش حرکات انتخاب شده
+                    updateSelectedExercisesDisplay();
+                    
+                    modal.classList.remove('hidden');
+                    
+                    // مشخص کردن چک‌باکس‌های حرکاتی که قبلاً به جلسه اضافه شده‌اند
+                    setTimeout(() => {
+                        // ابتدا همه چک‌باکس‌ها را پاک می‌کنیم
+                        document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        
+                        // سپس چک‌باکس‌های مربوط به حرکات موجود در جلسه را علامت می‌زنیم
+                        if (sessionExercisesMap[currentSession] && sessionExercisesMap[currentSession].length > 0) {
+                            document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                                const isInSession = sessionExercisesMap[currentSession].some(ex => ex.id === checkbox.value);
+                                checkbox.checked = isInSession;
+                                
+                                if (isInSession) {
+                                    console.log('چک‌باکس علامت‌دار شد:', checkbox.dataset.name);
+                                }
+                            });
+                        }
+                    }, 500); // تأخیر کوتاه برای اطمینان از بارگذاری حرکات
+                });
+            });
+
+            document.querySelectorAll('.subcategory-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.subcategory-btn').forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-gray-200');
+                    });
+                    this.classList.remove('bg-gray-200');
+                    this.classList.add('bg-blue-500', 'text-white');
+                    filterExercises(this.dataset.subcategory);
+                });
+            });
+
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            
+            document.getElementById('cancel-selection').addEventListener('click', function() {
+                // پاک کردن همه انتخاب‌های فعلی
+                selectedExercises = [];
+                selectionOrder = [];
+                
+                // برداشتن تیک همه چک‌باکس‌ها
+                document.querySelectorAll('.exercise-checkbox:checked').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // بروزرسانی نمایش حرکات انتخاب شده
+                updateSelectedExercisesDisplay();
+                
+                updateSupersetButtonState();
+            });
+
+            // Delete exercise functionality
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.delete-exercise')) {
+                    const exerciseRow = e.target.closest('.border.rounded');
+                    const sessionContainer = exerciseRow.closest('.session-container');
+                    const sessionNumber = sessionContainer.querySelector('.add-movement-btn').dataset.session;
+                    
+                    // حذف ردیف تمرین
+                    exerciseRow.remove();
+                    
+                    // به‌روزرسانی شماره‌گذاری فرم‌ها
+                    const allExerciseRows = document.querySelectorAll('[id^="exercise-row-"]');
+                    allExerciseRows.forEach((row, index) => {
+                        // به‌روزرسانی نام‌های فیلدها
+                        const inputs = row.querySelectorAll('input');
+                        inputs.forEach(input => {
+                            const name = input.name;
+                            if (name) {
+                                const newName = name.replace(/exercise_set-\d+/, `exercise_set-${index}`);
+                                input.name = newName;
+                            }
+                        });
+                        
+                        // به‌روزرسانی شناسه ردیف
+                        row.id = `exercise-row-${index}`;
+                    });
+                    
+                    // به‌روزرسانی تعداد کل فرم‌ها
+                    updateTotalForms();
+                    
+                    // بروزرسانی آرایه حرکات جلسه در نقشه
+                    if (sessionNumber && sessionExercisesMap[sessionNumber]) {
+                        sessionExercisesMap[sessionNumber] = extractExistingExercisesForSession(sessionNumber);
+                    }
+                    
+                    // بررسی و نمایش وضعیت خالی بودن جلسه
+                    const exercisesList = document.getElementById(`exercises-list-${sessionNumber}`);
+                    const emptyState = document.getElementById(`empty-state-${sessionNumber}`);
+                    
+                    if (exercisesList && exercisesList.children.length === 0 && emptyState) {
+                        emptyState.style.display = 'flex';
+                    }
+                }
+            });
+
+            // Form submission handling
+            document.getElementById('training-plan-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // اضافه کردن لاگ برای بررسی داده‌ها
+                const exercises = document.querySelectorAll('[name$="-exercise"]');
+                exercises.forEach((exercise, index) => {
+                    const exerciseData = {
+                        exercise: exercise.value,
+                        sets_reps: document.querySelector(`[name="exercise_set-${index}-sets_reps"]`)?.value,
+                        session_number: document.querySelector(`[name="exercise_set-${index}-session_number"]`)?.value,
+                        exercise_name: exercise.closest('[id^="exercise-row-"]')?.querySelector('.flex-grow.font-medium')?.textContent.trim()
+                    };
+                    console.log(`Exercise ${index + 1} Data:`, exerciseData);
+                });
+
+                // پاک کردن پیام‌های خطای قبلی
+                document.querySelectorAll('.error-message').forEach(el => el.remove());
+                document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+
+                const validationErrors = [];
+
+                // بررسی وجود تمرین
+                if (exercises.length === 0) {
+                    showError('لطفاً حداقل یک تمرین اضافه کنید.');
+                    return;
+                }
+
+                // بررسی جلسات خالی
+                const sessionExercises = {};
+                exercises.forEach((exercise, index) => {
+                    const sessionNum = document.querySelector(`[name="exercise_set-${index}-session_number"]`)?.value;
+                    if (sessionNum) {
+                        if (!sessionExercises[sessionNum]) {
+                            sessionExercises[sessionNum] = [];
+                        }
+                        sessionExercises[sessionNum].push(index);
+                    }
+                });
+
+                let emptySessionFound = false;
+                for (let i = 1; i <= {{ num_sessions|length }}; i++) {
+                    if (!sessionExercises[i] || sessionExercises[i].length === 0) {
+                        validationErrors.push(`جلسه ${i} خالی است. لطفاً حداقل یک تمرین اضافه کنید.`);
+                        emptySessionFound = true;
+                    }
+                }
+
+                if (emptySessionFound) {
+                    showError(validationErrors.join('\n'));
+                    return;
+                }
+
+                // بررسی فیلدهای اجباری هر تمرین
+                let isValid = true;
+                let firstErrorElement = null;
+                exercises.forEach((exercise, index) => {
+                    const setsReps = document.querySelector(`[name="exercise_set-${index}-sets_reps"]`);
+                    const sessionNum = document.querySelector(`[name="exercise_set-${index}-session_number"]`);
+                    const exerciseRow = exercise.closest('[id^="exercise-row-"]');
+                    const exerciseName = exerciseRow.querySelector('.flex-grow.font-medium').textContent.trim();
+
+                    if (!setsReps?.value) {
+                        validationErrors.push(`لطفاً تعداد ست و تکرار را برای تمرین "${exerciseName}" مشخص کنید.`);
+                        isValid = false;
+                        
+                        exerciseRow.classList.add('border-red-500');
+                        if (!firstErrorElement) {
+                            firstErrorElement = exerciseRow;
+                        }
+                    }
+
+                    if (!sessionNum?.value) {
+                        validationErrors.push(`شماره جلسه برای تمرین "${exerciseName}" مشخص نشده است.`);
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    showError(validationErrors.join('\n'));
+                    if (firstErrorElement) {
+                        firstErrorElement.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center'
+                        });
+                    }
+                    return;
+                }
+
+                // اگر همه اعتبارسنجی‌ها موفق بود، فرم را ارسال کن
+                this.submit();
+            });
+
+            // تابع نمایش خطا
+            function showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg z-50 max-w-md';
+                errorDiv.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <p class="font-bold">خطا</p>
+                            <p class="text-sm whitespace-pre-line">${message}</p>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(errorDiv);
+
+                // حذف خودکار پیام خطا بعد از 5 ثانیه
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
+            }
+
+            // Single exercise selection handler
+            document.getElementById('confirm-selection').addEventListener('click', function () {
+                const checkboxes = document.querySelectorAll('.exercise-checkbox:checked');
+                const selectedExercisesArray = Array.from(checkboxes).map(checkbox => ({
+                    id: checkbox.value,
+                    name: checkbox.dataset.name,
+                    muscle_group: checkbox.dataset.muscleGroup,
+                }));
+
+                if (selectedExercisesArray.length === 0) {
+                    alert('لطفاً حداقل یک تمرین را انتخاب کنید.');
+                    return;
+                }
+
+                console.log('تمرین‌های انتخاب شده برای اضافه کردن:', selectedExercisesArray);
+
+                // اضافه کردن تمرین‌های انتخاب شده
+                selectedExercisesArray.forEach(exercise => {
+                    addSingleExercise(exercise);
+                    
+                    // اضافه کردن به مپ حرکات جلسه‌ها
+                    if (!sessionExercisesMap[currentSession]) {
+                        sessionExercisesMap[currentSession] = [];
+                    }
+                    
+                    // افزودن به لیست جلسه اگر قبلا موجود نیست
+                    const exists = sessionExercisesMap[currentSession].some(ex => ex.id === exercise.id);
+                    if (!exists) {
+                        sessionExercisesMap[currentSession].push(exercise);
+                    }
+                });
+                
+                console.log('حرکات جلسه پس از افزودن:', sessionExercisesMap[currentSession]);
+                
+                // پاک کردن انتخاب‌های فعلی از مودال
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // بعد از افزودن، آرایه انتخاب‌های موقت خالی می‌شود تا برای انتخاب‌های بعدی آماده باشد
+                selectedExercises = [];
+                selectionOrder = [];
+                
+                // به‌روزرسانی نمایش حرکات
+                refreshExerciseSelectionUI(currentSession);
+                
+                // نمایش اعلان موفقیت
+                const exerciseNames = selectedExercisesArray.map(ex => ex.name).join('، ');
+                notificationManager.show(`حرکات "${exerciseNames}" با موفقیت به جلسه ${currentSession} اضافه شدند`);
+            });
+
+            function addSingleExercise(exercise) {
+                const sessionExercisesList = document.getElementById(`exercises-list-${currentSession}`);
+                const emptyState = document.getElementById(`empty-state-${currentSession}`);
+                
+                // Hide empty state when adding exercise
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+
+                const formIndex = totalFormsCount;
+                const exerciseId = Date.now() + Math.random();
+
+                // Format the name consistently
+                const formattedName = exercise.name
+                    .split(/[\n\r]+/)
+                    .map(part => part.trim())
+                    .filter(Boolean)
+                    .join(' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                const exerciseRow = document.createElement('div');
+                exerciseRow.id = `exercise-row-${exerciseId}`;
+                exerciseRow.className = 'border rounded p-4 mb-4 nui-heading nui-heading-sm nui-weight-medium nui-lead-normal relative top-0.5 text-xs nui-radio-label-text';
+
+                exerciseRow.innerHTML = `
+    <div class="space-y-4">
+      <div class="flex items-center space-x-4">
+        <input type="hidden" name="exercise_set-${formIndex}-exercise" value="${exercise.id}">
+        <input type="hidden" name="exercise_set-${formIndex}-session_number" value="${currentSession}">
+        <input type="hidden" name="exercise_set-${formIndex}-is_superset" value="false">
+        <input type="hidden" name="exercise_set-${formIndex}-paired_exercise" value="">
+        <input type="hidden" name="exercise_set-${formIndex}-paired_superset" value="">
+        <input type="hidden" name="exercise_set-${formIndex}-is_double_superset" value="false">
+        <button type="button" class="text-red-500 hover:text-red-700 delete-exercise">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+        <span class="flex-grow font-medium whitespace-normal">${formattedName}</span>
+        ${createCustomSelect(formIndex)}
+      </div>
+    </div>
+  `;
+
+                const customSelect = exerciseRow.querySelector('.custom-select');
+                initializeCustomSelect(customSelect);
+
+                sessionExercisesList.appendChild(exerciseRow);
+                totalFormsCount++;
+                updateTotalForms();
+                
+                // نمایش اعلان موفقیت
+                notificationManager.show(`حرکت "${formattedName}" با موفقیت ثبت شد و به جلسه اضافه شد`);
+            }
+
+            // اضافه کردن event listener برای دکمه تری ست
+            document.getElementById('make-triset').addEventListener('click', function() {
+                if (selectedExercises.length >= 3) {
+                    // گرفتن سه حرکت آخر برای تری ست
+                    const lastThreeIds = selectionOrder.slice(-3);
+                    const lastThreeExercises = selectedExercises.filter(ex => 
+                        lastThreeIds.includes(ex.id)
+                    ).sort((a, b) => 
+                        selectionOrder.indexOf(a.id) - selectionOrder.indexOf(b.id)
+                    );
+
+                    // گرفتن حرکت‌های باقیمانده به عنوان حرکت‌های تکی
+                    const remainingExercises = selectedExercises.filter(ex => 
+                        !lastThreeIds.includes(ex.id)
+                    ).sort((a, b) => 
+                        selectionOrder.indexOf(a.id) - selectionOrder.indexOf(b.id)
+                    );
+
+                    // اول اضافه کردن حرکت‌های تکی
+                    remainingExercises.forEach(exercise => {
+                        addSingleExercise(exercise);
+                    });
+
+                    // سپس اضافه کردن تری ست
+                    const [firstExercise, secondExercise, thirdExercise] = lastThreeExercises;
+                    const formIndex = totalFormsCount;
+                    const exerciseId = Date.now();
+                    const sessionExercisesList = document.getElementById(`exercises-list-${currentSession}`);
+
+                    const exerciseRow = document.createElement('div');
+                    exerciseRow.id = `exercise-row-${exerciseId}`;
+                    exerciseRow.className = 'border rounded p-4 mb-4 nui-heading nui-heading-sm nui-weight-medium nui-lead-normal relative top-0.5 text-xs nui-radio-label-text';
+
+                    exerciseRow.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <input type="hidden" name="exercise_set-${formIndex}-exercise" value="${firstExercise.id}">
+                                <input type="hidden" name="exercise_set-${formIndex}-session_number" value="${currentSession}">
+                                <input type="hidden" name="exercise_set-${formIndex}-is_superset" value="true">
+                                <input type="hidden" name="exercise_set-${formIndex}-paired_exercise" value="${secondExercise.id}">
+                                <input type="hidden" name="exercise_set-${formIndex}-paired_superset" value="${thirdExercise.id}">
+                                <button type="button" class="text-red-500 hover:text-red-700 delete-exercise">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                                <span class="flex-grow font-medium">
+                                    ${firstExercise.name}
+                                    <span class="text-purple-500">+ تری ست با</span>
+                                    ${secondExercise.name}
+                                    <span class="text-purple-500">+</span>
+                                    ${thirdExercise.name}
+                                </span>
+                                ${createCustomSelect(formIndex)}
+                            </div>
+                        </div>
+                    `;
+
+                    sessionExercisesList.appendChild(exerciseRow);
+                    const customSelect = exerciseRow.querySelector('.custom-select');
+                    initializeCustomSelect(customSelect);
+                    totalFormsCount++;
+                    updateTotalForms();
+                    
+                    // بروزرسانی لیست حرکات جلسه پس از اضافه کردن تری‌ست
+                    if (!sessionExercisesMap[currentSession]) {
+                        sessionExercisesMap[currentSession] = [];
+                    }
+                    
+                    // حذف حرکات استفاده شده در تری‌ست از لیست انتخاب‌ها
+                    sessionExercisesMap[currentSession] = sessionExercisesMap[currentSession].filter(ex => 
+                        !lastThreeIds.includes(ex.id)
+                    );
+                    
+                    // اضافه کردن تری‌ست به عنوان یک حرکت
+                    const trisetName = `${firstExercise.name} + ${secondExercise.name} + ${thirdExercise.name}`;
+                    const trisetExercise = {
+                        id: exerciseId.toString(),
+                        name: trisetName,
+                        isTriset: true
+                    };
+                    sessionExercisesMap[currentSession].push(trisetExercise);
+                    
+                    // پاک کردن همه انتخاب‌ها
+                    selectedExercises = [];
+                    selectionOrder = [];
+                    
+                    // برداشتن تیک همه چک‌باکس‌ها
+                    document.querySelectorAll('.exercise-checkbox:checked').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+
+                    updateSupersetButtonState();
+                    
+                    // به‌روزرسانی نمایش حرکات
+                    refreshExerciseSelectionUI(currentSession);
+                    
+                    // نمایش اعلان موفقیت
+                    notificationManager.show(`تری‌ست "${firstExercise.name}"، "${secondExercise.name}" و "${thirdExercise.name}" با موفقیت ثبت شد و به جلسه اضافه شد`);
+                } else {
+                    alert('لطفاً حداقل سه حرکت را انتخاب کنید.');
+                }
+            });
+
+            // تغییر در event listener دکمه make-superset
+            document.getElementById('make-superset').addEventListener('click', function() {
+                if (selectedExercises.length >= 2) {
+                    // گرفتن دو حرکت آخر برای سوپرست
+                    const lastTwoIds = selectionOrder.slice(-2);
+                    const lastTwoExercises = selectedExercises.filter(ex => 
+                        lastTwoIds.includes(ex.id)
+                    ).sort((a, b) => 
+                        selectionOrder.indexOf(a.id) - selectionOrder.indexOf(b.id)
+                    );
+
+                    // گرفتن حرکت‌های باقیمانده به عنوان حرکت‌های تکی
+                    const remainingExercises = selectedExercises.filter(ex => 
+                        !lastTwoIds.includes(ex.id)
+                    ).sort((a, b) => 
+                        selectionOrder.indexOf(a.id) - selectionOrder.indexOf(b.id)
+                    );
+
+                    // اول اضافه کردن حرکت‌های تکی
+                    remainingExercises.forEach(exercise => {
+                        addSingleExercise(exercise);
+                    });
+
+                    // سپس اضافه کردن سوپرست
+                    const [firstExercise, secondExercise] = lastTwoExercises;
+                    const formIndex = totalFormsCount;
+                    const exerciseId = Date.now();
+                    const sessionExercisesList = document.getElementById(`exercises-list-${currentSession}`);
+
+                    const exerciseRow = document.createElement('div');
+                    exerciseRow.id = `exercise-row-${exerciseId}`;
+                    exerciseRow.className = 'border rounded p-4 mb-4 nui-heading nui-heading-sm nui-weight-medium nui-lead-normal relative top-0.5 text-xs nui-radio-label-text';
+
+                    exerciseRow.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <input type="hidden" name="exercise_set-${formIndex}-exercise" value="${firstExercise.id}">
+                                <input type="hidden" name="exercise_set-${formIndex}-session_number" value="${currentSession}">
+                                <input type="hidden" name="exercise_set-${formIndex}-is_superset" value="true">
+                                <input type="hidden" name="exercise_set-${formIndex}-paired_exercise" value="${secondExercise.id}">
+                                <button type="button" class="text-red-500 hover:text-red-700 delete-exercise">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                                <span class="flex-grow font-medium">
+                                    ${firstExercise.name}
+                                    <span class="text-primary-500">+ سوپرست با</span>
+                                    ${secondExercise.name}
+                                </span>
+                                ${createCustomSelect(formIndex)}
+                            </div>
+                        </div>
+                    `;
+
+                    sessionExercisesList.appendChild(exerciseRow);
+                    const customSelect = exerciseRow.querySelector('.custom-select');
+                    initializeCustomSelect(customSelect);
+                    totalFormsCount++;
+                    updateTotalForms();
+                    
+                    // بروزرسانی لیست حرکات جلسه پس از اضافه کردن سوپرست
+                    if (!sessionExercisesMap[currentSession]) {
+                        sessionExercisesMap[currentSession] = [];
+                    }
+                    
+                    // حذف حرکات استفاده شده در سوپرست از لیست انتخاب‌ها
+                    sessionExercisesMap[currentSession] = sessionExercisesMap[currentSession].filter(ex => 
+                        !lastTwoIds.includes(ex.id)
+                    );
+                    
+                    // اضافه کردن سوپرست به عنوان یک حرکت
+                    const supersetName = `${firstExercise.name} + ${secondExercise.name}`;
+                    const supersetExercise = {
+                        id: exerciseId.toString(),
+                        name: supersetName,
+                        isSuperset: true
+                    };
+                    sessionExercisesMap[currentSession].push(supersetExercise);
+                    
+                    // پاک کردن همه انتخاب‌ها
+                    selectedExercises = [];
+                    selectionOrder = [];
+                    
+                    // برداشتن تیک همه چک‌باکس‌ها
+                    document.querySelectorAll('.exercise-checkbox:checked').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+
+                    updateSupersetButtonState();
+                    
+                    // بروزرسانی نمایش حرکات
+                    updateSelectedExercisesDisplay();
+                    
+                    // نمایش اعلان موفقیت
+                    notificationManager.show(`سوپرست "${firstExercise.name}" و "${secondExercise.name}" با موفقیت ثبت شد و به جلسه اضافه شد`);
+                } else {
+                    alert('لطفاً حداقل دو حرکت را انتخاب کنید.');
+                }
+            });
+
+            // اضافه کردن event listener برای دکمه finish-and-close
+            document.getElementById('finish-and-close').addEventListener('click', function() {
+                // حرکات انتخاب شده در مودال (چک‌باکس‌های فعال) را بررسی می‌کنیم
+                const checkboxes = document.querySelectorAll('.exercise-checkbox:checked');
+                
+                if (checkboxes.length > 0) {
+                    // اگر حرکات جدیدی انتخاب شده‌اند، پیغام هشدار نمایش می‌دهیم
+                    if (confirm('حرکات انتخاب شده هنوز به جلسه اضافه نشده‌اند. آیا مطمئن هستید که می‌خواهید بدون اضافه کردن آنها از این صفحه خارج شوید؟')) {
+                        closeModal();
+                    }
+                } else {
+                    closeModal();
+                }
+            });
+
+            // اضافه کردن استایل برای کانتینر حرکات انتخاب شده
+            const style = document.createElement('style');
+            style.textContent = `
+                #selected-exercises-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 4px;
+                    max-width: 70%;
+                    overflow-x: auto;
+                    padding: 4px;
+                    max-height: 80px;
+                    align-items: center;
+                }
+                
+                #selected-exercises-container::-webkit-scrollbar {
+                    height: 4px;
+                }
+                
+                #selected-exercises-container::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 10px;
+                }
+                
+                #selected-exercises-container::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 10px;
+                }
+                
+                #selected-exercises-container::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Initialize form
+            updateTotalForms();
+
+            // تابع کمکی برای نمایش و علامت‌گذاری حرکات انتخاب شده
+            function refreshExerciseSelectionUI(sessionNumber) {
+                console.log('به‌روزرسانی رابط کاربری حرکات انتخاب شده برای جلسه:', sessionNumber);
+                
+                // نمایش حرکات موجود در نوار بالای مودال
+                if (sessionExercisesMap[sessionNumber] && sessionExercisesMap[sessionNumber].length > 0) {
+                    // نمایش حرکات موجود در جلسه در بالای مودال
+                    selectedExercises = sessionExercisesMap[sessionNumber].map(ex => ({ ...ex }));
+                } else {
+                    // اگر هیچ حرکتی وجود نداشت، آرایه را خالی می‌کنیم
+                    selectedExercises = [];
+                }
+                
+                // بروزرسانی نمایش حرکات در بالای مودال
+                updateSelectedExercisesDisplay();
+                
+                // بررسی می‌کنیم آیا مودال باز است
+                if (!modal.classList.contains('hidden')) {
+                    // با تأخیر کوتاه چک‌باکس‌ها را بروز می‌کنیم (برای اطمینان از بارگذاری کامل حرکات)
+                    setTimeout(() => {
+                        // ابتدا همه چک‌باکس‌ها را پاک می‌کنیم
+                        document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        
+                        // سپس چک‌باکس‌های مربوط به حرکات موجود در جلسه را علامت می‌زنیم
+                        if (sessionExercisesMap[sessionNumber] && sessionExercisesMap[sessionNumber].length > 0) {
+                            const sessionExerciseIds = sessionExercisesMap[sessionNumber].map(ex => ex.id);
+                            console.log('شناسه حرکات موجود در جلسه:', sessionExerciseIds);
+                            
+                            document.querySelectorAll('.exercise-checkbox').forEach(checkbox => {
+                                const isInSession = sessionExerciseIds.includes(checkbox.value);
+                                if (isInSession) {
+                                    checkbox.checked = true;
+                                    console.log('چک‌باکس علامت‌دار شد:', checkbox.dataset.name);
+                                }
+                            });
+                        }
+                    }, 300);
+                }
+            }
+
+            // به‌روزرسانی باز کردن مودال برای استفاده از تابع کمکی جدید
+            document.querySelectorAll('.add-movement-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentSession = this.dataset.session;
+                    document.getElementById('modal-session-number').textContent = currentSession;
+                    
+                    console.log('باز کردن مودال برای جلسه:', currentSession);
+                    
+                    // بررسی می‌کنیم آیا این جلسه قبلاً حرکاتی داشته یا نه
+                    if (!sessionExercisesMap[currentSession]) {
+                        // اگر در نقشه ما موجود نیست، حرکات موجود در DOM را استخراج می‌کنیم
+                        const extractedExercises = extractExistingExercisesForSession(currentSession);
+                        sessionExercisesMap[currentSession] = extractedExercises;
+                        console.log('حرکات استخراج شده از DOM برای جلسه:', extractedExercises);
+                    }
+                    
+                    modal.classList.remove('hidden');
+                    
+                    // استفاده از تابع کمکی برای به‌روزرسانی رابط کاربری
+                    refreshExerciseSelectionUI(currentSession);
+                });
+            });
+        });
+
+        function createCustomSelect(formIndex) {
+            const selectHtml = `
+    <div class="custom-select-wrapper">
+      <div class="custom-select border rounded p-1 nui-select" tabindex="0">
+        <input type="hidden" name="exercise_set-${formIndex}-sets_reps" required>
+        <div class="selected-option p-2">ست و تکرار</div>
+        <div class="custom-select-dropdown">
+          {% for value, label in SETS_CHOICES %}
+            <div class="custom-select-option" data-value="{{ value }}">{{ label }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  `;
+
+            return selectHtml;
+        }
+
+        function initializeCustomSelect(selectElement) {
+            const selectedOption = selectElement.querySelector('.selected-option');
+            const dropdown = selectElement.querySelector('.custom-select-dropdown');
+            const hiddenInput = selectElement.querySelector('input[type="hidden"]');
+
+            selectElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            selectElement.querySelectorAll('.custom-select-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = option.dataset.value;
+                    const text = option.textContent;
+                    selectedOption.textContent = text;
+                    hiddenInput.value = value;
+                    dropdown.classList.remove('show');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('show');
+            });
+        }
+
+        // =================== افزودن رفتارهای جستجوی پیشرفته ===================
+
+        // تنظیمات و متغیرهای اصلی
+        const config = {
+            modalId: 'exercise-modal',
+            searchInputId: 'exercise-search',
+            exerciseListId: 'exercise-list',
+            validInputTypes: ['text', 'textarea', 'search'],
+            keyboardTriggerDelay: 300, // میلی‌ثانیه
+        };
+
+        // کلاس اصلی مدیریت جستجو
+        class AdvancedSearchManager {
+            constructor(config) {
+                this.modal = document.getElementById(config.modalId);
+                this.searchInput = document.getElementById(config.searchInputId);
+                this.exerciseList = document.getElementById(config.exerciseListId);
+                this.config = config;
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // شنونده کلید در کل صفحه
+                document.addEventListener('keydown', (e) => this.handleGlobalKeyPress(e));
+                
+                // شنونده کلید ESC
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+
+                // مدیریت انتخاب چک‌باکس‌ها
+                document.addEventListener('change', (e) => {
+                    if (e.target.matches('.exercise-checkbox')) {
+                        this.handleCheckboxSelection();
+                    }
+                });
+            }
+
+            handleGlobalKeyPress(e) {
+                // بررسی اینکه آیا کاربر در حال تایپ در فیلد ورودی دیگری است
+                if (this.isTypingInOtherInput(e.target)) {
+                    return;
+                }
+
+                // بررسی کلید فشرده شده (حروف فارسی، انگلیسی و اعداد)
+                const isPersianLetter = /[\u0600-\u06FF]/.test(e.key);
+                const isEnglishLetter = /^[a-zA-Z]$/.test(e.key);
+                const isNumber = /^[0-9]$/.test(e.key);
+
+                if (isPersianLetter || isEnglishLetter || isNumber) {
+                    e.preventDefault();
+                    this.openModalWithKey(e.key);
+                }
+            }
+
+            isTypingInOtherInput(target) {
+                return (
+                    target.tagName === 'INPUT' &&
+                    this.config.validInputTypes.includes(target.type.toLowerCase()) ||
+                    target.tagName === 'TEXTAREA'
+                );
+            }
+
+            openModalWithKey(key) {
+                // نمایش مودال
+                this.modal.classList.remove('hidden');
+                
+                // تمرکز روی فیلد جستجو و وارد کردن کلید
+                setTimeout(() => {
+                    this.searchInput.focus();
+                    this.searchInput.value = key;
+                    // شبیه‌سازی رویداد input برای فیلتر کردن نتایج
+                    this.searchInput.dispatchEvent(new Event('input'));
+                }, this.config.keyboardTriggerDelay);
+            }
+
+            handleCheckboxSelection() {
+                // پاک کردن فیلد جستجو
+                this.searchInput.value = '';
+                
+                // تمرکز مجدد روی فیلد جستجو با تاخیر کوتاه
+                setTimeout(() => {
+                    this.searchInput.focus();
+                    // به‌روزرسانی نتایج جستجو
+                    this.searchInput.dispatchEvent(new Event('input'));
+                }, 100);
+            }
+
+            closeModal() {
+                this.modal.classList.add('hidden');
+                this.searchInput.value = '';
+            }
+        }
+
+        // راه‌اندازی مدیریت جستجوی پیشرفته
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchManager = new AdvancedSearchManager(config);
+        });
+
+        // تابع اعتبارسنجی و ارسال فرم
+        function validateAndSubmitForm() {
+            // پاک کردن پیام‌های خطای قبلی
+            document.querySelectorAll('.error-message').forEach(el => el.remove());
+            document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
+
+            const exercises = document.querySelectorAll('[name$="-exercise"]');
+            const validationErrors = [];
+
+            // بررسی وجود تمرین
+            if (exercises.length === 0) {
+                showError('لطفاً حداقل یک تمرین اضافه کنید.');
+                return false;
+            }
+
+            // بررسی جلسات خالی
+            const sessionExercises = {};
+            exercises.forEach((exercise, index) => {
+                const sessionNum = document.querySelector(`[name="exercise_set-${index}-session_number"]`)?.value;
+                if (sessionNum) {
+                    if (!sessionExercises[sessionNum]) {
+                        sessionExercises[sessionNum] = [];
+                    }
+                    sessionExercises[sessionNum].push(index);
+                }
+            });
+
+            let emptySessionFound = false;
+            const numSessions = parseInt(document.querySelector('[name="exercise_set-TOTAL_FORMS"]').value) || 0;
+            
+            for (let i = 1; i <= numSessions; i++) {
+                if (!sessionExercises[i] || sessionExercises[i].length === 0) {
+                    validationErrors.push(`جلسه ${i} خالی است. لطفاً حداقل یک تمرین اضافه کنید.`);
+                    emptySessionFound = true;
+                }
+            }
+
+            if (emptySessionFound) {
+                showError(validationErrors.join('\n'));
+                return false;
+            }
+
+            // بررسی فیلدهای اجباری هر تمرین
+            let isValid = true;
+            let firstErrorElement = null;
+            exercises.forEach((exercise, index) => {
+                const setsReps = document.querySelector(`[name="exercise_set-${index}-sets_reps"]`);
+                const sessionNum = document.querySelector(`[name="exercise_set-${index}-session_number"]`);
+                const exerciseRow = exercise.closest('[id^="exercise-row-"]');
+                const exerciseName = exerciseRow.querySelector('.flex-grow.font-medium').textContent.trim();
+
+                if (!setsReps?.value) {
+                    validationErrors.push(`لطفاً تعداد ست و تکرار را برای تمرین "${exerciseName}" مشخص کنید.`);
+                    isValid = false;
+                    
+                    exerciseRow.classList.add('border-red-500');
+                    if (!firstErrorElement) {
+                        firstErrorElement = exerciseRow;
+                    }
+                }
+
+                if (!sessionNum?.value) {
+                    validationErrors.push(`شماره جلسه برای تمرین "${exerciseName}" مشخص نشده است.`);
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                showError(validationErrors.join('\n'));
+                if (firstErrorElement) {
+                    firstErrorElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center'
+                    });
+                }
+                return false;
+            }
+
+            // نمایش لودینگ
+            const saveButton = document.getElementById('save-training-plan-btn');
+            const originalContent = saveButton.innerHTML;
+            saveButton.innerHTML = `
+                <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>در حال ذخیره...</span>
+            `;
+            saveButton.disabled = true;
+            
+            // ارسال فرم با تاخیر کوتاه برای نمایش لودینگ
+            setTimeout(() => {
+                document.getElementById('training-plan-form').submit();
+            }, 300);
+            
+            return false; // جلوگیری از ارسال معمولی فرم
+        }
+
+        // Delete exercise functionality
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.delete-exercise')) {
+                const exerciseRow = e.target.closest('.border.rounded');
+                const sessionContainer = exerciseRow.closest('.session-container');
+                const sessionNumber = sessionContainer.querySelector('.add-movement-btn').dataset.session;
+                
+                // حذف ردیف تمرین
+                exerciseRow.remove();
+                
+                // به‌روزرسانی شماره‌گذاری فرم‌ها
+                const allExerciseRows = document.querySelectorAll('[id^="exercise-row-"]');
+                allExerciseRows.forEach((row, index) => {
+                    // به‌روزرسانی نام‌های فیلدها
+                    const inputs = row.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        const name = input.name;
+                        if (name) {
+                            const newName = name.replace(/exercise_set-\d+/, `exercise_set-${index}`);
+                            input.name = newName;
+                        }
+                    });
+                    
+                    // به‌روزرسانی شناسه ردیف
+                    row.id = `exercise-row-${index}`;
+                });
+                
+                // به‌روزرسانی تعداد کل فرم‌ها
+                updateTotalForms();
+                
+                // بروزرسانی آرایه حرکات جلسه در نقشه
+                if (sessionNumber && sessionExercisesMap[sessionNumber]) {
+                    // حذف حرکت با شناسه موردنظر از آرایه حرکات جلسه
+                    const exerciseIdInput = exerciseRow.querySelector('input[name$="-exercise"]');
+                    const exerciseId = exerciseIdInput ? exerciseIdInput.value : null;
+                    
+                    console.log('حذف حرکت با شناسه:', exerciseId, 'از جلسه:', sessionNumber);
+                    
+                    // حذف حرکت با شناسه موردنظر از آرایه حرکات جلسه
+                    if (exerciseId) {
+                        sessionExercisesMap[sessionNumber] = sessionExercisesMap[sessionNumber].filter(ex => ex.id !== exerciseId);
+                    } 
+                    // یا به روش جایگزین، کل آرایه را از DOM استخراج می‌کنیم
+                    else {
+                        sessionExercisesMap[sessionNumber] = extractExistingExercisesForSession(sessionNumber);
+                    }
+                    
+                    console.log('حرکات جلسه پس از حذف:', sessionExercisesMap[sessionNumber]);
+                    
+                    // اگر مودال برای این جلسه باز است، نمایش را به‌روز می‌کنیم
+                    if (currentSession === sessionNumber && !modal.classList.contains('hidden')) {
+                        refreshExerciseSelectionUI(sessionNumber);
+                    }
+                }
+                
+                // بررسی و نمایش وضعیت خالی بودن جلسه
+                const exercisesList = document.getElementById(`exercises-list-${sessionNumber}`);
+                const emptyState = document.getElementById(`empty-state-${sessionNumber}`);
+                
+                if (exercisesList && exercisesList.children.length === 0 && emptyState) {
+                    emptyState.style.display = 'flex';
+                }
+                
+                // نمایش اعلان
+                notificationManager.show('حرکت با موفقیت حذف شد.');
+            }
+        });
+    </script>
+    <style>
+        .exercise-checkbox:checked + div {
+            background-color: #f0f9ff; /* Light blue background for selected items */
+            border-color: #3b82f6; /* Blue border for selected items */
+        }
+
+        #exercise-search {
+            transition: all 0.2s ease;
+        }
+
+        #exercise-search:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Blue focus ring */
+            border-color: #3b82f6;
+        }
+
+        mark {
+            background-color: #fef08a;
+            color: #1f2937;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            min-width: 180px; /* افزایش عرض پایه */
+        }
+
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .selected-option {
+            font-size: 1rem; /* افزایش سایز فونت */
+            padding: 0.75rem 1rem; /* افزایش پدینگ */
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+
+        .custom-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-height: 300px; /* افزایش ارتفاع */
+            overflow-y: auto;
+            display: none;
+            padding: 0.5rem 0;
+        }
+
+        .custom-select-dropdown.show {
+            display: block;
+        }
+
+        .custom-select-option {
+            padding: 0.75rem 1.25rem; /* افزایش پدینگ */
+            cursor: pointer;
+            text-align: right;
+            font-size: 1rem; /* افزایش سایز فونت */
+            transition: all 0.2s ease;
+        }
+
+        .custom-select-option:hover {
+            background-color: #6366f1; /* رنگ hover به بنفش */
+            color: white;
+        }
+
+        .custom-select-option.selected {
+            background-color: #4f46e5; /* رنگ انتخاب شده به بنفش تیره */
+            color: white;
+        }
+
+        /* استایل‌های مربوط به نمایش خطا */
+        .border-red-500 {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 1px #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* انیمیشن اسکرول */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* استایل‌های جدید برای دسته‌بندی‌ها */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .subcategory-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 1.25rem 2rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #4B5563;
+            background-color: #F3F4F6;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+        }
+
+        .subcategory-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .subcategory-btn:hover {
+            background-color: #E5E7EB;
+            border-color: #D1D5DB;
+            color: #1F2937;
+        }
+
+        .subcategory-btn.active {
+            background-color: #4F46E5;
+            border-color: #4F46E5;
+            color: white;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        /* انیمیشن‌های تعاملی */
+        @keyframes buttonPress {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        .subcategory-btn:active {
+            animation: buttonPress 0.2s ease;
+        }
+
+        /* بهبود فاصله‌گذاری و سلسله مراتب بصری */
+        .category-section {
+            margin: 2rem 0;
+        }
+
+        .category-section:first-child {
+            margin-top: 0;
+        }
+
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+    <script src="{% static 'js/page-leave-confirmation.js' %}"></script>
+    <script src="{% static 'js/notification.js' %}"></script>
+{% endblock %}

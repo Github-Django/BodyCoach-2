@@ -1,0 +1,1 @@
+import{d as a,o as t,D as o,w as s,a as n,bT as r}from"./BcqZkZus.js";/* empty css        */const _=n("div",null,null,-1),u=a({__name:"starter-sidebar",setup(c){return(i,l)=>{const e=r;return t(),o(e,null,{default:s(()=>[_]),_:1})}}});export{u as default};

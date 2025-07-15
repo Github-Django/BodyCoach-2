@@ -1,0 +1,1 @@
+import{B as a,D as e,w as n,c9 as s,o as c,C as r}from"./BcqZkZus.js";/* empty css        */const _={};function f(o,l){const t=s;return c(),e(t,null,{default:n(()=>[r(o.$slots,"default")]),_:3})}const u=a(_,[["render",f]]);export{u as default};

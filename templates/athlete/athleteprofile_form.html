@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+{% extends 'home/base.html' %}
+{% block subject %}
+    {% if object %}به‌روزرسانی بیوگرافی ورزشکار{% else %}افزودن بیوگرافی جدید برای ورزشکار{% endif %}
+{% endblock %}
+{% block title %}
+    {% if object %}به‌روزرسانی بیوگرافی ورزشکار{% else %}افزودن ورزشکار جدید{% endif %}
+{% endblock %}
+{% load static %}
+{% block main %}
+
+    {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-gradient">
+                        <div class="alert-icon">✓</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">{{ message }}</h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'error' %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">✕</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">{{ message }}</h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'warning' %}
+                    <div class="alert alert-with-icon">
+                        <div class="alert-icon">!</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">{{ message }}</h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">i</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">{{ message }}</h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="loading-indicator"></div>
+    
+    <div class="athlete-profile-container mx-auto max-w-7xl bg-white dark:bg-muted-800 rounded-lg shadow-md p-4 sm:p-6">
+        <div class="profile-header mb-6 flex items-center gap-4">
+            <div class="profile-icon-box bg-primary-50 dark:bg-primary-500/10 text-primary-500 flex h-14 w-14 shrink-0 items-center justify-center rounded-full font-sans text-xl shadow-sm">
+                <svg height="28px" width="28px" viewBox="0 0 393.309 393.309" fill="currentColor">
+                    <path d="M276.234,376.566c-14.61,6.465-30.19,11.184-46.416,13.964c-11.507-10.99-31.095-36.913-33.228-86.626c-2.069,49.713-21.721,75.572-33.164,86.626c-16.291-2.78-31.935-7.564-46.545-14.093c3.297-73.438,38.271-92.057,38.271-92.057l0,0c1.939-0.194,36.137-3.038,41.244,18.036v0.388c0-0.065,0-0.129,0.065-0.259c0,0.065,0.065,0.129,0.065,0.259v-0.388c5.236-21.657,41.374-18.036,41.374-18.036c0-0.065-0.065-0.129-0.065-0.259l0.129,0.259C238.028,284.444,272.937,303.063,276.234,376.566z"></path>
+                </svg>
+            </div>
+            <div class="profile-header-text">
+                <h2 class="text-xl font-bold text-muted-900 dark:text-white">ثبت اطلاعات ورزشکار جدید</h2>
+                <p class="text-sm text-muted-500 dark:text-muted-400">لطفاً اطلاعات دقیق و کامل وارد کنید تا بتوانیم بهترین برنامه تمرینی را برای شما طراحی کنیم.</p>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left Column -->
+                <div class="form-column">
+                    <!-- Section 1: Personal Info -->
+                    <div class="form-section mb-6 bg-muted-100 dark:bg-muted-700/30 rounded-xl p-5">
+                        <div class="section-header flex items-center justify-between mb-5 border-b border-muted-200 dark:border-muted-700 pb-3">
+                            <h3 class="flex items-center text-lg font-semibold text-muted-800 dark:text-white">
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary-500 text-white text-sm font-bold ml-3">1</span>
+                                اطلاعات شخصی
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Full Name -->
+                            <div class="form-field">
+                                <label for="id_full_name" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">نام و نام خانوادگی <span class="text-red-500">*</span></label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                    </div>
+                                    <input name="full_name" type="text" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                               placeholder="مثال: حامد حسنی" maxlength="100" required id="id_full_name"
+                                               value="{{ form.instance.full_name }}">
+                                        </div>
+                                {% if form.full_name.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.full_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Age -->
+                            <div class="form-field">
+                                <label for="id_age" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">سن <span class="text-red-500">*</span></label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                    </div>
+                                    <input type="number" name="age" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: 24" required id="id_age" 
+                                        value="{{ form.instance.age }}">
+                                </div>
+                                {% if form.age.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.age.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Height -->
+                            <div class="form-field">
+                                <label for="id_height" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">قد (سانتی‌متر) <span class="text-red-500">*</span></label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="2" x2="12" y2="22"></line>
+                                            <path d="M17 5H7"></path>
+                                            <path d="M17 19H7"></path>
+                                            </svg>
+                                        </div>
+                                    <input type="number" name="height" step="0.01" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: 184" required id="id_height" 
+                                        value="{{ form.instance.height }}">
+                                </div>
+                                {% if form.height.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.height.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Weight -->
+                            <div class="form-field">
+                                <label for="id_weight" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">وزن (کیلوگرم) <span class="text-red-500">*</span></label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                                            </svg>
+                                        </div>
+                                    <input type="number" name="weight" step="0.01" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: 90" required id="id_weight" 
+                                        value="{{ form.instance.weight }}">
+                                </div>
+                                {% if form.weight.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.weight.errors.0 }}</p>
+                                {% endif %}
+                                </div>
+                            </div>
+                    </div>
+
+                    <!-- Section 2: Training Info -->
+                    <div class="form-section mb-6 bg-muted-100 dark:bg-muted-700/30 rounded-xl p-5">
+                        <div class="section-header flex items-center justify-between mb-5 border-b border-muted-200 dark:border-muted-700 pb-3">
+                            <h3 class="flex items-center text-lg font-semibold text-muted-800 dark:text-white">
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary-500 text-white text-sm font-bold ml-3">2</span>
+                                اطلاعات تمرینی
+                            </h3>
+                            </div>
+
+                        <div class="grid grid-cols-1 gap-5">
+                            <!-- Motivation Goal -->
+                            <div class="form-field">
+                                <label for="id_motivation_goal" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">هدف و انگیزه ورزشی</label>
+                                <div class="input-wrapper relative">
+                                    <select name="motivation_goal" class="form-select w-full px-3 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300 appearance-none" id="id_motivation_goal">
+                                        <option value="" {% if form.instance.motivation_goal == '' %}selected{% endif %}>لطفاً انتخاب کنید</option>
+                                        <option value="professional_bodybuilding" {% if form.instance.motivation_goal == 'professional_bodybuilding' %}selected{% endif %}>بدنسازی حرفه‌ای و مسابقات</option>
+                                        <option value="health_fitness" {% if form.instance.motivation_goal == 'health_fitness' %}selected{% endif %}>سلامتی و علاقه به ورزش</option>
+                                    </select>
+                                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m6 9 6 6 6-6"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                {% if form.motivation_goal.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.motivation_goal.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Training History -->
+                            <div class="form-field">
+                                <label for="id_training_history" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">سابقه تمرین</label>
+                                <textarea name="training_history" class="form-textarea w-full px-3 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                    placeholder="مثال: 4 سال بدنسازی، 2 سال کراس‌فیت..." rows="3" id="id_training_history">{{ form.instance.training_history|default_if_none:"" }}</textarea>
+                                {% if form.training_history.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.training_history.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                <!-- Right Column -->
+                <div class="form-column">
+                    <!-- Section 3: Contact Info -->
+                    <div class="form-section mb-6 bg-muted-100 dark:bg-muted-700/30 rounded-xl p-5">
+                        <div class="section-header flex items-center justify-between mb-5 border-b border-muted-200 dark:border-muted-700 pb-3">
+                            <h3 class="flex items-center text-lg font-semibold text-muted-800 dark:text-white">
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary-500 text-white text-sm font-bold ml-3">3</span>
+                                اطلاعات تماس
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- Mobile Phone -->
+                            <div class="form-field">
+                                <label for="id_mobile_phone" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">شماره تلفن همراه</label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="mobile_phone" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                               placeholder="مثال: 09123456789" id="id_mobile_phone"
+                                               value="{{ form.instance.mobile_phone|default_if_none:'' }}">
+                                    </div>
+                                    {% if form.mobile_phone.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.mobile_phone.errors.0 }}</p>
+                                    {% endif %}
+                            </div>
+
+                            <!-- Telegram/WhatsApp -->
+                            <div class="form-field">
+                                <label for="id_telegram_whatsapp_phone" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">شماره تلگرام / واتساپ</label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="telegram_whatsapp_phone" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: 09123456789" id="id_telegram_whatsapp_phone" 
+                                        value="{{ form.instance.telegram_whatsapp_phone|default_if_none:'' }}">
+                                </div>
+                                {% if form.telegram_whatsapp_phone.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.telegram_whatsapp_phone.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Gym Name -->
+                            <div class="form-field">
+                                <label for="id_gym_name" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">نام باشگاه</label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M2 22h20"></path>
+                                            <path d="M18 3v14"></path>
+                                            <path d="M14 3v14"></path>
+                                            <path d="M10 3v14"></path>
+                                            <path d="M6 3v14"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="gym_name" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: باشگاه فیتنس" id="id_gym_name" 
+                                        value="{{ form.instance.gym_name|default_if_none:'' }}">
+                                </div>
+                                {% if form.gym_name.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.gym_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Referrer -->
+                            <div class="form-field">
+                                <label for="id_referrer" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">معرف</label>
+                                <div class="input-wrapper relative">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="referrer" class="form-input w-full px-10 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                        placeholder="مثال: علی محمدی" id="id_referrer" 
+                                        value="{{ form.instance.referrer|default_if_none:'' }}">
+                                </div>
+                                {% if form.referrer.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.referrer.errors.0 }}</p>
+                                    {% endif %}
+                            </div>
+                                </div>
+                            </div>
+
+                    <!-- Section 4: Additional Info -->
+                    <div class="form-section mb-6 bg-muted-100 dark:bg-muted-700/30 rounded-xl p-5">
+                        <div class="section-header flex items-center justify-between mb-5 border-b border-muted-200 dark:border-muted-700 pb-3">
+                            <h3 class="flex items-center text-lg font-semibold text-muted-800 dark:text-white">
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary-500 text-white text-sm font-bold ml-3">4</span>
+                                اطلاعات تکمیلی
+                            </h3>
+                                    </div>
+                        
+                        <div class="grid grid-cols-1 gap-5">
+                            <!-- Injuries -->
+                            <div class="form-field">
+                                <label for="id_injuries" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">آسیب‌دیدگی‌ها</label>
+                                <textarea name="injuries" class="form-textarea w-full px-3 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                    placeholder="مثال: شانه درد - کتف درد..." rows="3" id="id_injuries">{{ form.instance.injuries|default_if_none:"" }}</textarea>
+                                {% if form.injuries.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.injuries.errors.0 }}</p>
+                                    {% endif %}
+                            </div>
+
+                            <!-- Supplements -->
+                            <div class="form-field">
+                                <label for="id_supplements" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">مصرف مکمل‌ها و داروها</label>
+                                <textarea name="supplements" class="form-textarea w-full px-3 py-2 bg-white dark:bg-muted-800 border border-muted-300 dark:border-muted-700 rounded-lg text-muted-700 dark:text-muted-300" 
+                                    placeholder="مثال: کراتین، پروتئین وي..." rows="3" id="id_supplements">{{ form.instance.supplements|default_if_none:'' }}</textarea>
+                                {% if form.supplements.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ form.supplements.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                                </div>
+                            </div>
+
+                    <!-- Section 5: Body Test File -->
+                    <div class="form-section mb-6 bg-muted-100 dark:bg-muted-700/30 rounded-xl p-5">
+                        <div class="section-header flex items-center justify-between mb-5 border-b border-muted-200 dark:border-muted-700 pb-3">
+                            <h3 class="flex items-center text-lg font-semibold text-muted-800 dark:text-white">
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-primary-500 text-white text-sm font-bold ml-3">5</span>
+                                فایل تست بدنی
+                            </h3>
+                                    </div>
+
+                        <div class="form-field">
+                            <label for="id_body_test_file" class="block text-sm font-medium text-muted-700 dark:text-muted-300 mb-1">آپلود فایل تست بادی</label>
+                            <div class="file-upload-area border-2 border-dashed border-muted-300 dark:border-muted-700 rounded-lg p-4 text-center">
+                                <div class="flex flex-col items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="mb-2 text-muted-400" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17 8 12 3 7 8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    <p class="text-sm text-muted-600 dark:text-muted-400 mb-2">فایل خود را بکشید و اینجا رها کنید یا روی دکمه زیر کلیک کنید</p>
+                                    <input type="file" name="body_test_file" id="id_body_test_file" class="hidden">
+                                    <button type="button" class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm" onclick="document.getElementById('id_body_test_file').click()">انتخاب فایل</button>
+                                    <p id="file-name" class="mt-2 text-sm text-muted-500 dark:text-muted-400 hidden"></p>
+                                </div>
+                            </div>
+                            {% if form.body_test_file.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ form.body_test_file.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions flex flex-wrap md:flex-nowrap gap-4 mt-6">
+                <button type="button" onclick="history.back();" class="w-full md:w-1/2 px-6 py-3 bg-muted-200 dark:bg-muted-700 text-muted-800 dark:text-white rounded-lg hover:bg-muted-300 dark:hover:bg-muted-600 transition-colors font-medium">
+                    انصراف
+                </button>
+                <button type="submit" class="w-full md:w-1/2 px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                    {% if object %}ثبت تغییرات{% else %}ایجاد پروفایل{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // File upload preview
+            const fileInput = document.getElementById('id_body_test_file');
+            const fileName = document.getElementById('file-name');
+            
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (fileInput.files.length > 0) {
+                        fileName.textContent = 'فایل انتخاب شده: ' + fileInput.files[0].name;
+                        fileName.classList.remove('hidden');
+                    } else {
+                        fileName.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Form validation on submit
+            const form = document.querySelector('.profile-form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    const loadingIndicator = document.querySelector('.loading-indicator');
+                    if (loadingIndicator) {
+                        loadingIndicator.classList.add('active');
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

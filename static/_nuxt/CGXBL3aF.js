@@ -1,0 +1,1 @@
+import{B as e,o as r,c as o}from"./BcqZkZus.js";/* empty css        */const t={},c={class:"border-muted-200 dark:border-muted-700"};function s(n,a){return r(),o("hr",c)}const m=e(t,[["render",s]]);export{m as default};

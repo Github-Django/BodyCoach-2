@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+{% extends 'home/base.html' %}
+{% block subject %}لیست برنامه‌های غذایی{% endblock %}
+{% block title %}لیست برنامه‌های غذایی{% endblock %}
+{% load static %}
+{% block main %}
+
+    {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-gradient">
+                        <div class="alert-icon">✓</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'error' %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">✕</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'warning' %}
+                    <div class="alert alert-with-icon">
+                        <div class="alert-icon">!</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">i</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="mb-6 flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
+        <div class="flex w-full items-center gap-4 sm:w-auto">
+            <div class="pb border-muted-200 dark:border-muted-800 border-b">
+                <p class="nui-heading nui-heading-xl nui-weight-medium nui-lead-normal text-muted-800 mb-8 dark:text-white">
+                    ورزشکار: {{ athlete_profile.full_name }}<br/><small>کد: {{ athlete_profile.unique_code }}</small>
+                </p>
+            </div>
+        </div>
+        <div class="flex w-full items-center justify-end gap-4 sm:w-auto">
+            <div class="pb border-muted-200 dark:border-muted-800 border-b">
+                <p class="nui-heading nui-heading-md text-muted-600 dark:text-muted-400">
+                    تعداد برنامه‌ها: {{ plan_count }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="ltablet:grid-cols-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="nutrition-grid">
+        {% for plan in nutrition_plans %}
+            <div class="nui-card nui-card-rounded-lg nui-card-default p-3 nutrition-card">
+                <div class="flex w-full items-center gap-2">
+                    <div class="dark:bg-muted-800 relative z-10 size-4 shrink-0 rounded-full bg-white">
+                        <div class="size-4 rounded-full border-2 border-current 
+                        {% if forloop.first %}bg-info-500/20 text-info-500
+                        {% else %}bg-yellow-500/20 text-yellow-500{% endif %}"></div>
+                    </div>
+                    <div>
+                        <p class="nui-heading nui-heading-sm nui-weight-medium nui-lead-normal nutrition-date">
+                            {{ plan.jpublish }}
+                        </p>
+                    </div>
+                    <div class="ms-auto">
+                        <a href="{% url 'food:nutrition_plan_detail' plan.id %}"
+                           class="nui-button-icon nui-button-rounded-full nui-button-medium nui-button-success">
+                            <span class="nui-context-button-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        {% empty %}
+            <p>هیچ برنامه‌ای یافت نشد.</p>
+        {% endfor %}
+    </div>
+
+    <br/>
+    <div>
+        <div class="nui-pagination nui-pagination-rounded-full nui-pagination-primary">
+            <ul class="nui-pagination-list nui-pagination-rounded-full">
+                {% for num in paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li>
+                            <a aria-current="page" href="?page={{ num }}"
+                               class="router-link-active router-link-exact-active nui-pagination-link nui-active nui-pagination-rounded-full"
+                               tabindex="0"> {{ num }} </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="?page={{ num }}"
+                               class="nui-pagination-link nui-pagination-rounded-full"
+                               tabindex="0"> {{ num }} </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <div class="nui-pagination-buttons nui-pagination-rounded-full">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}"
+                       class="nui-pagination-button rtl:rotate-180"
+                       tabindex="0">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                             class="icon pagination-button-icon" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                  stroke-linejoin="round" stroke-width="2"
+                                  d="m15 18l-6-6l6-6"></path>
+                        </svg>
+                    </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}"
+                       class="nui-pagination-button rtl:rotate-180"
+                       tabindex="0">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                             class="icon pagination-button-icon" width="1em" height="1em" viewBox="0 0 24 24">
+                            <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                  stroke-linejoin="round" stroke-width="2"
+                                  d="m9 18l6-6l-6-6"></path>
+                        </svg>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

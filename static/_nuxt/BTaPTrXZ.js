@@ -1,0 +1,1 @@
+function a(B,n=!0,r=1){const i=n?1e3:1024;if(Math.abs(B)<i)return B+" B";const o=n?["KB","MB","GB","TB","PB","EB","ZB","YB"]:["KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB"];let t=-1;const e=10**r;do B/=i,++t;while(Math.round(Math.abs(B)*e)/e>=i&&t<o.length-1);return B.toFixed(r)+" "+o[t]}export{a as f};

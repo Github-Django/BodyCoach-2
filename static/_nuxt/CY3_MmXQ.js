@@ -1,0 +1,1 @@
+import{d as a,c7 as o,o as n,D as s,w as r,C as c,al as l,g as u}from"./BcqZkZus.js";/* empty css        */const _=a({__name:"default",setup(p){const{activeLayoutComponent:e}=o();return(t,m)=>(n(),s(l(u(e)),null,{default:r(()=>[c(t.$slots,"default")]),_:3}))}});export{_ as default};

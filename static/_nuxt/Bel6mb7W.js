@@ -1,0 +1,1 @@
+import{B as e,o as t,c as n,C as s}from"./BcqZkZus.js";const c={},r={class:"nui-button-group"};function _(o,a){return t(),n("div",r,[s(o.$slots,"default")])}const u=e(c,[["render",_]]);export{u as _};

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+{% extends 'home/base.html' %}
+{% block subject %}برنامه تمرینی{% endblock %}
+{% block title %}برنامه تمرینی{% endblock %}
+{% load static %}
+{% block main %}
+    {% if messages %}
+        <div class="alert-container">
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-gradient">
+                        <div class="alert-icon">✓</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'error' %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">✕</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% elif message.tags == 'warning' %}
+                    <div class="alert alert-with-icon">
+                        <div class="alert-icon">!</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% else %}
+                    <div class="alert alert-filled">
+                        <div class="alert-icon">i</div>
+                        <h3 class="alert-message nui-heading nui-heading-sm nui-weight-medium nui-lead-normal text-white">
+                            {{ message }}
+                        </h3>
+                        <button class="alert-close">✕</button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <link rel="stylesheet" href="{% static 'css/train-planing.css' %}">
+<!-- هدر برنامه تمرینی با دکمه‌های بهبود یافته -->
+<div class="print-header flex items-center justify-between bg-white p-4 rounded-lg shadow-sm mb-6">
+    <!-- سمت راست: عنوان و مشخصات -->
+  <div class="flex flex-col items-start gap-1 mb-4">
+    <h1 class="text-lg font-semibold">
+        <span class="text-gray-500">برنامه تمرینی بدنساز:</span>
+        <span class="text-gray-900">{{ training_plan.athlete_profile.full_name }}</span>
+    </h1>
+    <span class="text-xs text-gray-500">
+        کد ورزشی: {{ training_plan.athlete_profile.unique_code }}
+    </span>
+</div>
+
+    <!-- سمت چپ: دکمه‌های عملیات -->
+    <div class="flex items-center gap-4">
+        <!-- پرینت -->
+        <button onclick="printContainer()" class="action-button print-btn" title="پرینت برنامه">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            <span>پرینت</span>
+        </button>
+
+        <!-- PDF با ویدیو -->
+        <a href="{% url 'train:send_training_plan_without_videos' training_plan.id %}" class="action-button pdf-video-btn">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 512 512">
+                <path d="M378.4 0H208.3l-22.5 9.3L57 138.1l-9.3 9.3v278.7C47.7 473.5 86.2 512 133.6 512h244.8c47.4 0 85.9-38.5 85.9-85.9V85.9C464.3 38.5 425.8 0 378.4 0z"/>
+            </svg>
+            <span>PDF</span>
+        </a>
+
+        <!-- PDF بدون ویدیو -->
+        <a href="{% url 'train:send_training_plan_with_videos' training_plan.id %}" class="action-button pdf-btn">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            <span>PDF با ویدیو</span>
+        </a>
+
+        <!-- ویرایش -->
+        <a href="{% url 'train:edit_training_plan' training_plan.id %}" class="action-button edit-btn">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span>ویرایش</span>
+        </a>
+    </div>
+</div>
+
+<style>
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.action-button svg {
+    transition: transform 0.2s ease;
+}
+
+.action-button:hover svg {
+    transform: scale(1.1);
+}
+
+.action-button span {
+    margin-right: 0.25rem;
+}
+
+/* Print button */
+.print-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+    border-color: #e5e7eb;
+}
+
+.print-btn:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+/* PDF with video button */
+.pdf-video-btn {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+
+.pdf-video-btn:hover {
+    background-color: #bfdbfe;
+    border-color: #93c5fd;
+}
+
+/* PDF button */
+.pdf-btn {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.pdf-btn:hover {
+    background-color: #fecaca;
+    border-color: #fca5a5;
+}
+
+/* Edit button */
+.edit-btn {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.edit-btn:hover {
+    background-color: #a7f3d0;
+    border-color: #6ee7b7;
+}
+
+/* Hover effect for all buttons */
+.action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+/* Print media query */
+@media print {
+    .action-button {
+        display: none;
+    }
+}
+
+.footer {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.coach-info {
+    text-align: right;
+}
+
+.coach-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.address {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.instagram-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #6b7280;
+    transition: color 0.2s ease;
+}
+
+.instagram-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.instagram-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+@media print {
+    .instagram-link {
+        text-decoration: none;
+    }
+}
+</style>
+    <div class="container" id="pdf-content">
+        <div class="header">
+            <div class="top-left">
+                <div class="name">
+                    بدنساز: {{ training_plan.athlete_profile.full_name }}
+                    <br/>
+                    <small>کد ورزشی: {{ training_plan.athlete_profile.unique_code }}</small>
+                </div>
+                <div class="date">تاریخ: {{ training_plan.jpublish }}</div>
+                <span>به مدت 5 هفته</span>
+            </div>
+            <h5 class="date">به نام دوست</h5>
+            <div class="logo">
+                <img src="{% static 'img/logo.png' %}" alt="لوگو" class="logo-image">
+            </div>
+        </div>
+
+
+
+        {% for session_number, exercises in sessions.items %}
+            <div class="session">
+                <div class="session-header">جلسه {{ session_number }}</div>
+                <ul class="exercise-list">
+                    {% for exercise_set in exercises %}
+                        <li class="exercise-item">
+        <span>
+                    <span class="underline">{{ forloop.counter }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {% if exercise_set.exercise.config_url or exercise_set.exercise.training_video %}
+                <a href="{% url 'exercise:video_player' exercise_set.exercise.id %}" target="_blank"
+                   style="color: #0077b6; font-weight: bold;">
+            {{ exercise_set.exercise.name }}
+        </a>
+            {% else %}
+                {{ exercise_set.exercise.name }}
+            {% endif %}            {% if exercise_set.is_superset and exercise_set.paired_exercise %}
+            <span style="color: #e63946; font-weight: bold;"> + </span>&nbsp;&nbsp;
+            {% if exercise_set.paired_exercise.config_url or exercise_set.exercise.training_video %}
+                <a href="{% url 'exercise:video_player' exercise_set.paired_exercise.id %}" target="_blank"
+                   style="color: #0077b6; font-weight: bold;">
+                {{ exercise_set.paired_exercise.name }}
+            </a>
+            {% else %}
+                {{ exercise_set.paired_exercise.name }}
+            {% endif %}            {% endif %}
+            {% if exercise_set.paired_superset %}
+                <span style="color: #0077b6; font-weight: bold;"> + </span>&nbsp;&nbsp;
+                {% if exercise_set.paired_superset.config_url or exercise_set.exercise.training_video%}
+                    <a href="{% url 'exercise:video_player' exercise_set.paired_superset.id %}" target="_blank"
+                       style="color: #0077b6; font-weight: bold;">
+                {{ exercise_set.paired_superset.name }}
+            </a>
+                {% else %}
+                    {{ exercise_set.paired_superset.name }}
+                {% endif %}            {% endif %}
+
+                        </span>
+
+                            <span>{{ exercise_set.sets_reps }}</span>
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+            </div>
+        {% endfor %}
+
+        <div class="footer">
+            <div class="footer-content">
+                <div class="coach-info">
+                    <div class="coach-name">{{ coach_name }}</div>
+                    <div class="address">آدرس: رفسنجان، برج شیشه‌ای، واحد 508، 509</div>
+                    <div class="instagram-link">
+                        <a href="{% if request.user.username == 'hoseini' %}https://instagram.com/lifestyle_sportcounseling{% else %}https://instagram.com/_hamed_hasani{% endif %}" target="_blank">
+                            <span>{% if request.user.username == 'hoseini' %}lifestyle_sportcounseling{% else %}_hamed_hasani{% endif %}</span>
+                            <svg class="instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.012-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        function printContainer() {
+            const container = document.querySelector('.container').outerHTML;
+            const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+                .map(style => style.outerHTML)
+                .join('\n');
+            const newWindow = window.open('', '_blank', 'width=800,height=600');
+            newWindow.document.open();
+            newWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="fa" dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <title>چاپ برنامه تمرینی</title>
+                ${styles}
+            </head>
+            <body onload="window.print(); window.close();">
+                ${container}
+            </body>
+            </html>
+        `);
+            newWindow.document.close();
+        }
+    </script>
+{% endblock %}

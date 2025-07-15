@@ -1,0 +1,1 @@
+import{d as n,a6 as s,o,c as r,b as c,w as _,e as l,g as p,l as m}from"./BcqZkZus.js";/* empty css        */const B=n({__name:"search",setup(u){const{open:t}=s();return(i,e)=>{const a=m;return o(),r("div",null,[c(a,{onClick:e[0]||(e[0]=d=>p(t)("search"))},{default:_(()=>[l(" باز کردن پنل ")]),_:1})])}}});export{B as default};

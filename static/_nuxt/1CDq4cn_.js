@@ -1,0 +1,1 @@
+import{d as t,a6 as o,o as s,c as r,b as c,w as l,e as u,g as _,l as p}from"./BcqZkZus.js";/* empty css        */const x=t({__name:"language",setup(m){const{open:a}=o();return(i,e)=>{const n=p;return s(),r("div",null,[c(n,{onClick:e[0]||(e[0]=d=>_(a)("language"))},{default:l(()=>[u(" باز کردن پنل ")]),_:1})])}}});export{x as default};

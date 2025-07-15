@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create/Update Workout Split</title>
+</head>
+<body>
+    <h1>{% if object %}Update Workout Split{% else %}Create Workout Split{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if object %}Update{% else %}Create{% endif %}</button>
+    </form>
+
+    <a href="{% url 'workoutsplit_list' %}">Back to Workout Split List</a>
+</body>
+</html>

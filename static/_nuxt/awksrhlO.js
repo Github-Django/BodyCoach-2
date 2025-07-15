@@ -1,0 +1,1 @@
+import{p as s}from"./BcqZkZus.js";const o=s("/img/illustrations/placeholders/flat/placeholder-projects.svg"),t=s("/img/illustrations/placeholders/flat/placeholder-projects-dark.svg");export{o as _,t as a};

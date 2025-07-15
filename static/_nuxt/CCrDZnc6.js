@@ -1,0 +1,1 @@
+import{_ as a,a as _,b as s}from"./Cy6CGWzC.js";import{d as c,o as m,c as r,b as o}from"./BcqZkZus.js";import"./CRTBaWZK.js";import"./OrjpnidP.js";import"./Cl5EuCjM.js";/* empty css        */const p={class:"dark:bg-muted-900 bg-white pt-16"},x=c({__name:"demos",setup(i){return(d,f)=>{const t=a,n=_,e=s;return m(),r("div",p,[o(t,{cta:!1}),o(n),o(e)])}}});export{x as default};

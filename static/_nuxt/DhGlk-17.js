@@ -1,0 +1,1 @@
+import{d as e,o as t,c as o,a as s}from"./BcqZkZus.js";/* empty css        */const n=s("h1",null,"خطای آزمایشی",-1),r=[n],d=e({__name:"test-error",setup(a){return(c,_)=>(t(),o("div",null,r))}});export{d as default};
